@@ -52,23 +52,23 @@ export async function getStaticPaths() {
 
 function Competition({ feed, raw, cData, editions, gkData, scorersData, matches }) {
     let router = useRouter();
-    raw = JSON.parse(raw);
-    cData = JSON.parse(cData);
-    editions = JSON.parse(editions);
-    gkData = JSON.parse(gkData);
-    scorersData = JSON.parse(scorersData);
-    matches = JSON.parse(matches);
-    let startDate = matches[matches.length - 1].ddate.substring(0, 10);
-    let endDate = matches[0].ddate.substring(0, 10);
+    raw = raw? JSON.parse(raw) : [];
+    cData = cData ? JSON.parse(cData) : [{name : "undefined"}];
+    editions = editions ? JSON.parse(editions) : [];
+    gkData = gkData ? JSON.parse(gkData) : [];
+    scorersData = scorersData ? JSON.parse(scorersData) : [] ;
+    matches = matches ? JSON.parse(matches) : [];
+    // let startDate = matches[matches.length - 1].ddate.substring(0, 10);
+    // let endDate = matches[0].ddate.substring(0, 10);
     let rows = raw.map((row, index) => ({ id: index, position: index + 1, ...row }));
     let gkRows = gkData.map((row, index) => ({ id: index, position: index + 1, ...row }));
     let scorersRows = scorersData.map((row, index) => ({ id: index, position: index + 1, ...row }));
     let matchesRows = matches.map((row, index) => ({ id: index, position: index + 1, ...row }));
-    let columns = Object.keys(raw[0]).map((columnName) => {
-        if (columnName != "nick") return ({ field: columnName, headerName: columnName.toUpperCase(), flex: 1 });
-        else return ({ field: columnName, headerName: columnName.toUpperCase(), flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>) });
-    }
-    );
+    // let columns = Object.keys(raw[0]).map((columnName) => {
+    //     if (columnName != "nick") return ({ field: columnName, headerName: columnName.toUpperCase(), flex: 1 });
+    //     else return ({ field: columnName, headerName: columnName.toUpperCase(), flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>) });
+    // }
+    // );
     let generalColumns = [{ field: 'position', headerName: "#", flex: 0.1 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>)  }, { field: "appearances", headerName: "Apps", flex: 0.5  }, { field: "goals", headerName: "Goals", flex: 0.5  }, { field: "assists", headerName: "Assists", flex: 0.5  }, { field: "cleansheets", headerName: "CS", flex: 0.5 }, { field: "wins", headerName: "W", flex: 0.1}, , { field: "draws", headerName: "D", flex: 0.1}, { field: "losses", headerName: "L", flex: 0.1 }];
     let scorersColumns = [{ field: 'position', headerName: "#", flex: 0.1 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>) }, { field: "goals", headerName: "Goals", flex: 0.5  }, { field: "assists", headerName: "Assists", flex: 0.5  }];
     let gkColumns = [{ field: 'position', headerName: "#", flex: 0.3 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>) }, { field: "gka", headerName: "GKA", flex: 0.5 }, { field: "cleansheets", headerName: "CS", flex: 0.5 }, { field: "cspercent", headerName: "%CS", flex: 0.7 }, { field: "lostgoals", headerName: "LG", flex: 0.5 }];
@@ -80,7 +80,6 @@ function Competition({ feed, raw, cData, editions, gkData, scorersData, matches 
         generalColumns.push({ field: "points", headerName: "Points", flex: 0.5  });
         gkColumns.push({ field: "gkpoints", headerName: "Points", flex: 0.7 });
     }
-    columns.unshift({ field: "position", headerName: "#", flex: 0.3 });
     return (
         <main className='competition-main'>
             <div className='card'>
