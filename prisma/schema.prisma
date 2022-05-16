@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model appearances {
+  pk         Int      @id @default(autoincrement())
+  matchid    Int?
+  team       Int?
+  playerid   Int?
+  playername String?  @db.VarChar(50)
+  isgk       Int?
+  matches    matches? @relation(fields: [matchid], references: [pk], onDelete: NoAction)
+  players    players? @relation(fields: [playerid], references: [pk], onDelete: NoAction)
+}
+
+model ban_history {
+  pk      Int     @id @default(autoincrement())
+  by      String? @db.VarChar(50)
+  byconn  String? @db.VarChar(50)
+  who     String? @db.VarChar(50)
+  whoconn String? @db.VarChar(50)
+  date    BigInt?
+}
+
+model banned {
+  pk    Int     @id @default(autoincrement())
+  login String? @db.VarChar(50)
+  conn  String? @db.VarChar(50)
+}
+
+model competitions {
+  pk                    Int       @id @default(autoincrement())
+  name                  String?   @unique @db.VarChar(50)
+  stadium               String?   @db.VarChar(25)
+  format                Int?
+  timelimit             Int?
+  scorelimit            Int?
+  maxtime               Int?
+  isactive              Int?
+  islast                Int?
+  goal                  Decimal?  @db.Decimal(15, 5)
+  assist                Decimal?  @db.Decimal(15, 5)
+  extragoal             Decimal?  @db.Decimal(15, 5)
+  extraassist           Decimal?  @db.Decimal(15, 5)
+  cleansheet            Decimal?  @db.Decimal(15, 5)
+  win                   Decimal?  @db.Decimal(15, 5)
+  loss                  Decimal?  @db.Decimal(15, 5)
+  draw                  Decimal?  @db.Decimal(15, 5)
+  tagid                 Int?
+  datefrom              BigInt?
+  dateto                BigInt?
+  winrateexponentiation Int?
+  seriesid              Int?
+  edition               Int?
+  tags                  tags?     @relation(fields: [tagid], references: [pk], onDelete: NoAction)
+  matches               matches[]
+}
+
+model competitionsseries {
+  pk            Int  @id
+  competitionid Int?
+  seriesid      Int?
+  edition       Int?
+}
+
+model formats {
+  pk         Int     @id @default(autoincrement())
+  stadium    String? @db.VarChar(25)
+  amount     Int?
+  scorelimit Int?
+  timelimit  Int?
+  isactive   Int?
+}
+
+model goals {
+  pk                              Int      @id @default(autoincrement())
+  matchid                         Int?
+  scorer                          Int?
+  scorername                      String?  @db.VarChar(50)
+  assister                        Int?
+  assistername                    String?  @db.VarChar(50)
+  time                            Decimal? @db.Decimal(15, 5)
+  own                             Int?
+  players_goals_assisterToplayers players? @relation("goals_assisterToplayers", fields: [assister], references: [pk], onDelete: NoAction)
+  matches                         matches? @relation(fields: [matchid], references: [pk], onDelete: NoAction)
+  players_goals_scorerToplayers   players? @relation("goals_scorerToplayers", fields: [scorer], references: [pk], onDelete: NoAction)
+}
+
+model login_history {
+  pk   Int     @id @default(autoincrement())
+  nick String? @db.VarChar(50)
+  conn String? @db.VarChar(50)
+  date BigInt?
+}
+
+model matches {
+  pk            Int            @id @default(autoincrement())
+  competitionid Int?
+  scorelimit    Int?
+  format        Int?
+  stadium       String?        @db.VarChar(25)
+  date          BigInt?
+  standardtime  Int?
+  wholetime     Decimal?       @db.Decimal(15, 5)
+  result1       Int?
+  result2       Int?
+  competitions  competitions?  @relation(fields: [competitionid], references: [pk], onDelete: NoAction)
+  appearances   appearances[]
+  goals         goals[]
+  matches_tags  matches_tags[]
+}
+
+model matches_tags {
+  pk      Int      @id @default(autoincrement())
+  matchid Int?
+  tagid   Int?
+  matches matches? @relation(fields: [matchid], references: [pk], onDelete: NoAction)
+  tags    tags?    @relation(fields: [tagid], references: [pk], onDelete: NoAction)
+}
+
+model players {
+  pk                            Int           @id @default(autoincrement())
+  nick                          String?       @db.VarChar(50)
+  password                      String?       @db.VarChar(30)
+  publickey                     String?       @db.VarChar(50)
+  role                          String?       @db.VarChar(20)
+  registeredon                  BigInt?
+  isblocked                     Int?
+  isbanned                      Int?
+  color                         String?       @db.VarChar(30)
+  appearances                   appearances[]
+  goals_goals_assisterToplayers goals[]       @relation("goals_assisterToplayers")
+  goals_goals_scorerToplayers   goals[]       @relation("goals_scorerToplayers")
+}
+
+model players_history {
+  pk    Int     @id @default(autoincrement())
+  login String? @db.VarChar(50)
+  conn  String? @db.VarChar(50)
+  date  BigInt?
+}
+
+model series {
+  pk   Int     @id
+  name String? @db.VarChar(25)
+  type String? @db.VarChar(25)
+}
+
+model tags {
+  pk           Int            @id @default(autoincrement())
+  name         String?        @unique @db.VarChar(50)
+  competitions competitions[]
+  matches_tags matches_tags[]
+}
