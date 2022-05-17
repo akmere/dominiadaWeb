@@ -32,7 +32,7 @@ function Tabela(props) {
   return (
     <ThemeProvider theme={darkTheme}>
     <div style={{ height: props.height ? props.height : 631, width: '100%' }}>
-      <DataGrid rowHeight={props.rowHeight ? props.rowHeight : 52} className='table' rows = {props.rows} columns = {props.columns}
+      <DataGrid rowHeight={props.rowHeight ? props.rowHeight : 52} className='table' rows = {props.rows} columns = {props.columns} getRowClassName={props.getRowClassName ? props.getRowClassName : null}
       disableSelectionOnClick={true}
         pageSize={props.pageSize ? props.pageSize : 10}
         rowsPerPageOptions={[10]}

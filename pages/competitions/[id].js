@@ -58,8 +58,9 @@ function Competition({ feed, raw, cData, editions, gkData, scorersData, matches 
     gkData = gkData ? JSON.parse(gkData) : [];
     scorersData = scorersData ? JSON.parse(scorersData) : [] ;
     matches = matches ? JSON.parse(matches) : [];
-    // let startDate = matches[matches.length - 1].ddate.substring(0, 10);
-    // let endDate = matches[0].ddate.substring(0, 10);
+    let startDate = matches[matches.length - 1].ddate.substring(0, 10);
+    let endDate = matches[0].ddate.substring(0, 10);
+    let intervalString = startDate == endDate ? `${startDate}` : `${startDate} - ${endDate}`
     let rows = raw.map((row, index) => ({ id: index, position: index + 1, ...row }));
     let gkRows = gkData.map((row, index) => ({ id: index, position: index + 1, ...row }));
     let scorersRows = scorersData.map((row, index) => ({ id: index, position: index + 1, ...row }));
@@ -92,6 +93,7 @@ function Competition({ feed, raw, cData, editions, gkData, scorersData, matches 
                     }}>
                         {editions.map(edition => (<option key={edition.pk} value={edition.edition}>{edition.edition}</option>))};
                     </select>
+                <p>{intervalString}</p>
                 </div>
                 <Tabela rows={rows} columns={generalColumns} pageSize={10} rowHeight={52}/>
             </div>

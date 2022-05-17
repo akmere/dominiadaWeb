@@ -108,9 +108,14 @@ a {
   box-shadow: 0 0 25px 5px #000;
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1000px) {
   .grid-container {
     height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  .navbar {
+    height: 100vh;
+    min-height: -webkit-fill-available;
   }
   .competition-main {
     display: flex !important;
@@ -294,4 +299,47 @@ a {
 
 .competition-main > .card:nth-child(4) {
   grid-area: card3;
+}
+
+.win-row {
+  background-color: hsl(120, 100%, 10%);
+}
+
+.loss-row {
+  background-color: rgb(78, 0, 0);
+}
+
+.draw-row {
+  background-color: hsl(60, 100%, 16%);
+}
+
+.icons-row {
+  display: flex;
+  position: "absolute";
+}
+
+.icons-row:hover {
+  overflow: auto;
+}
+
+.MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline:none !important
+}
+
+.position-1-row{
+  background-color: rgb(168, 143, 0);
+}
+.position-2-row{
+  background-color: hsl(0, 0%, 60%);
+}
+.position-3-row{
+  
+  background-color: #a86829
+  ;
+}
+
+.goal-list, .players-list{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
