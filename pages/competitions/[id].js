@@ -41,8 +41,6 @@ export async function getStaticProps({ params }) {
 export async function getStaticPaths() {
     const competitionsIdis = await prisma.$queryRaw`SELECT Pk FROM Competitions;`;
 
-    console.log("OTO " + competitionsIdis[0].pk);
-
     const paths = competitionsIdis.map(post => ({
         params: { id: post.pk.toString() },
     }));
@@ -51,7 +49,7 @@ export async function getStaticPaths() {
 }
 
 
-function Competition({ feed, raw, cData, editions, gkData, scorersData, matches, appearances }) {
+function Competition({ raw, cData, editions, gkData, scorersData, matches, appearances }) {
     let router = useRouter();
     raw = raw? JSON.parse(raw) : [];
     cData = cData ? JSON.parse(cData) : [{name : "undefined"}];
@@ -60,7 +58,6 @@ function Competition({ feed, raw, cData, editions, gkData, scorersData, matches,
     scorersData = scorersData ? JSON.parse(scorersData) : [] ;
     matches = matches ? JSON.parse(matches) : [];
     appearances = appearances ? JSON.parse(appearances) : [];
-    console.log(appearances);
     let startDate = matches[matches.length - 1].ddate.substring(0, 10);
     let endDate = matches[0].ddate.substring(0, 10);
     let intervalString = startDate == endDate ? `${startDate}` : `${startDate} - ${endDate}`

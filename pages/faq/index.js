@@ -15,7 +15,6 @@ export async function getServerSideProps(context) {
 
 export default function faq({commands, questions}) {
   const roles = [... new Set(commands.map(command => command.role))];
-  console.log(commands);
   return (
     <div className='faq-container'>
       <div className='card faq-container-item'>

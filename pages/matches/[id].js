@@ -18,7 +18,6 @@ export async function getServerSideProps({ params }) {
 export default function Match({ match, goals, appearances }) {
   match = JSON.parse(match);
   goals = JSON.parse(goals);
-  console.log(goals)
   appearances = JSON.parse(appearances);
   const router = useRouter();
   return (
