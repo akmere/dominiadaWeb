@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react'
 import Tabela from './Tabela'
-import { AppBar, Box, Container, CssBaseline, Divider, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from '@mui/material'
+import { AppBar, TextField, Autocomplete, Box, Container, CssBaseline, Divider, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, createTheme, ThemeProvider, createFilterOptions } from '@mui/material'
 import prisma from '../lib/prisma'
 import Navbar from './Navbar'
 import Footer from './Footer'
@@ -12,9 +12,26 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import { flexbox } from '@mui/system'
 import { ClassNames, ThemeContext } from '@emotion/react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 
-function Layout({ children, window, series, competitions }) {
+function Layout({ children, window, series, competitions, players }) {
+    const router = useRouter();
+
+    const OPTIONS_LIMIT = 5;
+    const defaultFilterOptions = createFilterOptions();
+    
+    const filterOptions = (options, state) => {
+      return defaultFilterOptions(options, state).slice(0, OPTIONS_LIMIT);
+    };
+
+    const darkTheme = createTheme({
+        palette: {
+          mode: 'dark',
+        },
+      });
+
+    players = JSON.parse(players);
     series = JSON.parse(series);
     competitions = JSON.parse(competitions);
     const styles = theme => ({
@@ -98,14 +115,19 @@ function Layout({ children, window, series, competitions }) {
                         </ul>
                     </li>
 
-                    <li className='nav-item'>
+                    {/* <li className='nav-item'>
                         <Link href='/archive'>
                             <a><p className='nav-header'>ARCHIWUM</p> </a>
                         </Link>
-                    </li>
+                    </li> */}
                     <li className='nav-item'>
                         <Link href='/players'>
                             <a><p className='nav-header'>ZAWODNICY</p></a>
+                        </Link>
+                    </li>
+                    <li className='nav-item'>
+                        <Link href='/faq'>
+                            <a><p className='nav-header'>ROOM/FAQ</p></a>
                         </Link>
                     </li>
                     {/* <li className='nav-item'>
@@ -130,11 +152,18 @@ function Layout({ children, window, series, competitions }) {
 
             <i className="bi bi-list navbar-toggler" onClick={navbarTogglerOnClick}></i>  
         <div className='grid-container'>
-            <div className='header'>
-            </div>          
+                <div className='header'>
+                    <ThemeProvider theme={darkTheme}>
+                        <Autocomplete key={true} filterOptions={filterOptions} limitTags={5} size='small' disablePortal className="autocomplete-players" options={players.map(p => p.nick)} sx={{ width: 300, marginTop: '1rem' }}
+                            renderInput={(params) => <TextField {...params} label="Find player" />} 
+                            onChange={(e, value) => {console.log(value); let found = players.filter(p => p.nick == value)[0]; if(found) router.push(`/players/${found.pk}`) }}/>
+                    </ThemeProvider>
+                </div>          
             <div className='sidebar'></div>
             <div className='content'>{children}</div>
-            <div className='footer'></div>
+            <div className='footer'>
+                <p className='copyright'>© 2022 made by akmere</p>
+            </div>
         </div>
         </div>
     )

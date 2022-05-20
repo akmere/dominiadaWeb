@@ -11,11 +11,11 @@ import { useRouter } from 'next/router'
 
 export async function getStaticProps({ params }) {
     params.id = parseInt(params.id);
-    const raw = await prisma.$queryRaw`SELECT Nick, Goals, Assists, CleanSheets, LostGoals, ExtraWins AS Wins, ExtraDraws AS Draws, ExtraLosses AS Losses, Appearances, CASE WHEN Appearances > 0 THEN ROUND(CAST(ExtraWins AS decimal)/Appearances, 4) * 100 ELSE NULL END AS WinRate, CASE WHEN Gka>0 THEN (ROUND(CAST(CleanSheets AS decimal)/Gka, 4) * 100) ELSE NULL END AS CSPercent, ROUND(Points) AS Points, ROUND(GkPoints) AS GkPoints, GKa FROM Stats WHERE CompetitionId=${params.id} ORDER BY Points DESC, Goals DESC, Assists DESC, CleanSheets DESC, Appearances ASC;`;
-    const cData = await prisma.$queryRaw`SELECT Series.Name AS Name, Competitions.TagId AS TagId, Series.Pk AS SeriesId, Series.Type AS Type, Competitions.Edition AS Edition FROM Competitions LEFT JOIN Series ON Competitions.SeriesId = Series.Pk WHERE Competitions.Pk = ${params.id};`;
+    const raw = await prisma.$queryRaw`SELECT PlayerId, Nick, Goals, Assists, CleanSheets, LostGoals, ExtraWins AS Wins, ExtraDraws AS Draws, ExtraLosses AS Losses, Appearances, CASE WHEN Appearances > 0 THEN ROUND(CAST(ExtraWins AS decimal)/Appearances, 4) * 100 ELSE NULL END AS WinRate, CASE WHEN Gka>0 THEN (ROUND(CAST(CleanSheets AS decimal)/Gka, 4) * 100) ELSE NULL END AS CSPercent, ROUND(Points) AS Points, ROUND(GkPoints) AS GkPoints, GKa FROM Stats WHERE CompetitionId=${params.id} ORDER BY Points DESC, Goals DESC, Assists DESC, CleanSheets DESC, Appearances ASC;`;
+    const cData = await prisma.$queryRaw`SELECT Competitions.Format AS Format, Series.Name AS Name, Competitions.TagId AS TagId, Series.Pk AS SeriesId, Series.Type AS Type, Competitions.Edition AS Edition FROM Competitions LEFT JOIN Series ON Competitions.SeriesId = Series.Pk WHERE Competitions.Pk = ${params.id};`;
     const editions = await prisma.$queryRaw`SELECT Pk, Edition FROM Competitions WHERE SeriesId=${cData[0].seriesid} ORDER BY Edition DESC;`;
     const matches = await prisma.$queryRaw`SELECT Pk, result1, result2, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS'), 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk IN (SELECT MatchId FROM Matches_Tags WHERE TagId=${cData[0].tagid}) ORDER BY Date DESC;`;
-
+    const appearances = await prisma.$queryRaw`SELECT Appearances.* FROM Appearances LEFT JOIN Matches ON Appearances.MatchId = Matches.Pk LEFT JOIN Matches_Tags ON Matches.Pk = Matches_Tags.MatchId WHERE Matches_Tags.TagId=${cData[0].tagid} ORDER BY Matches.Date DESC;`
 
 
     let gkAppsMargin = 1;
@@ -32,7 +32,8 @@ export async function getStaticProps({ params }) {
             editions: JSON.stringify(editions),
             gkData: JSON.stringify(gkData, (key, value) => (typeof value === 'bigint' ? value.toString() : value)),
             scorersData: JSON.stringify(scorersData, (key, value) => (typeof value === 'bigint' ? value.toString() : value)),
-            matches: JSON.stringify(matches, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
+            matches: JSON.stringify(matches, (key, value) => (typeof value === 'bigint' ? value.toString() : value)),
+            appearances: JSON.stringify(appearances, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
         }, // will be passed to the page component as props
     }
 }
@@ -50,7 +51,7 @@ export async function getStaticPaths() {
 }
 
 
-function Competition({ feed, raw, cData, editions, gkData, scorersData, matches }) {
+function Competition({ feed, raw, cData, editions, gkData, scorersData, matches, appearances }) {
     let router = useRouter();
     raw = raw? JSON.parse(raw) : [];
     cData = cData ? JSON.parse(cData) : [{name : "undefined"}];
@@ -58,6 +59,8 @@ function Competition({ feed, raw, cData, editions, gkData, scorersData, matches 
     gkData = gkData ? JSON.parse(gkData) : [];
     scorersData = scorersData ? JSON.parse(scorersData) : [] ;
     matches = matches ? JSON.parse(matches) : [];
+    appearances = appearances ? JSON.parse(appearances) : [];
+    console.log(appearances);
     let startDate = matches[matches.length - 1].ddate.substring(0, 10);
     let endDate = matches[0].ddate.substring(0, 10);
     let intervalString = startDate == endDate ? `${startDate}` : `${startDate} - ${endDate}`
@@ -70,10 +73,10 @@ function Competition({ feed, raw, cData, editions, gkData, scorersData, matches 
     //     else return ({ field: columnName, headerName: columnName.toUpperCase(), flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>) });
     // }
     // );
-    let generalColumns = [{ field: 'position', headerName: "#", flex: 0.1 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>)  }, { field: "appearances", headerName: "Apps", flex: 0.5  }, { field: "goals", headerName: "Goals", flex: 0.5  }, { field: "assists", headerName: "Assists", flex: 0.5  }, { field: "cleansheets", headerName: "CS", flex: 0.5 }, { field: "wins", headerName: "W", flex: 0.1}, , { field: "draws", headerName: "D", flex: 0.1}, { field: "losses", headerName: "L", flex: 0.1 }];
-    let scorersColumns = [{ field: 'position', headerName: "#", flex: 0.1 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>) }, { field: "goals", headerName: "Goals", flex: 0.5  }, { field: "assists", headerName: "Assists", flex: 0.5  }];
-    let gkColumns = [{ field: 'position', headerName: "#", flex: 0.3 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.value)}`}>{params.value}</Link>) }, { field: "gka", headerName: "GKA", flex: 0.5 }, { field: "cleansheets", headerName: "CS", flex: 0.5 }, { field: "cspercent", headerName: "%CS", flex: 0.7 }, { field: "lostgoals", headerName: "LG", flex: 0.5 }];
-    let matchesColumns = [{field: 'result1', headerName: "Red", flex:0.2},{field: 'result2', headerName: "Blue", flex: 0.2},{field: 'ddate', headerName: "Date", flex: 1}]
+    let generalColumns = [{ field: 'position', headerName: "#", flex: 0.1 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.row.playerid)}`}>{params.value}</Link>)  }, { field: "appearances", headerName: "Apps", flex: 0.5  }, { field: "goals", headerName: "Goals", flex: 0.5  }, { field: "assists", headerName: "Assists", flex: 0.5  }, { field: "cleansheets", headerName: "CS", flex: 0.5 }, { field: "wins", headerName: "W", flex: 0.1}, , { field: "draws", headerName: "D", flex: 0.1}, { field: "losses", headerName: "L", flex: 0.1 }];
+    let scorersColumns = [{ field: 'position', headerName: "#", flex: 0.1 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.row.playerid)}`}>{params.value}</Link>) }, { field: "goals", headerName: "Goals", flex: 0.5  }, { field: "assists", headerName: "Assists", flex: 0.5  }];
+    let gkColumns = [{ field: 'position', headerName: "#", flex: 0.3 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.row.playerid)}`}>{params.value}</Link>) }, { field: "gka", headerName: "GKA", flex: 0.5 }, { field: "cleansheets", headerName: "CS", flex: 0.5 }, { field: "cspercent", headerName: "%CS", flex: 0.7 }, { field: "lostgoals", headerName: "LG", flex: 0.5 }];
+    let matchesColumns = [{field: 'reds', headerName: "", flex:1,renderCell: (params) => (<div style={{display:'flex', flexDirection:'column', alignItems: 'center', width: '100%'}}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 1).map(appearance => (<p className='player-match-competition'> {appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)},{field: 'result1', headerName: "Red", flex:0.2, align: 'center', headerAlign: 'center'},{field: 'result2', headerName: "Blue", flex: 0.2, align: 'center', headerAlign: 'center'},{field: 'blues', headerName: "", flex:1, renderCell: (params) => (<div style={{display:'flex', flexDirection:'column', alignItems: 'center', width: '100%'}}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 2).map(appearance => (<p className='player-match-competition'>{appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)},{field: 'ddate', headerName: "Date", flex: 1}]
     matchesColumns.push({field: 'pk', headerName: "", flex: 0.3, renderCell: (params) => (<a href={`/matches/${encodeURIComponent(params.row.pk)}`}>Details</a>)});
     if (cData[0].type == 'liga') 
     {
@@ -98,15 +101,16 @@ function Competition({ feed, raw, cData, editions, gkData, scorersData, matches 
                 <Tabela rows={rows} columns={generalColumns} pageSize={10} rowHeight={52}/>
             </div>
             <div className='card'>
-                <Tabela rows={scorersRows} rowHeight={30} subtitle = "" columns={scorersColumns} height="100%" pageSize={3} />
+                <h3>Najlepsi strzelcy</h3>
+                <Tabela rows={scorersRows} rowHeight={52} subtitle = "" columns={scorersColumns} height="100%" pageSize={3} />
             </div>
             <div className='card'>
-                {/* <h3>Najlepsi bramkarze</h3> */}
-                <Tabela rows={gkRows} rowHeight={30} subtitle = "" columns={gkColumns} height="100%" pageSize={3} />
+                <h3>Najlepsi bramkarze</h3>
+                <Tabela rows={gkRows} rowHeight={52} subtitle = "" columns={gkColumns} height="100%" pageSize={3} />
             </div>
-            <div className='card'>
-                {/* <h3>Mecze</h3> */}
-                <Tabela rows={matchesRows} rowHeight={30} subtitle = "" columns={matchesColumns} height="100%" pageSize={3} />
+            <div className='card' >
+                <h3>Mecze</h3>
+                <Tabela rows={matchesRows} rowHeight={cData[0].format * 30} subtitle = "" columns={matchesColumns} height={120 + cData[0].format * 30 * 3} pageSize={3} />
             </div>
         </main>
 

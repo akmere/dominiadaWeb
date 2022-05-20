@@ -57,6 +57,7 @@ model competitions {
   winrateexponentiation Int?
   seriesid              Int?
   edition               Int?
+  ended                 Boolean?
   tags                  tags?     @relation(fields: [tagid], references: [pk], onDelete: NoAction)
   matches               matches[]
 }
@@ -156,4 +157,17 @@ model tags {
   name         String?        @unique @db.VarChar(50)
   competitions competitions[]
   matches_tags matches_tags[]
+}
+
+model teams {
+  pk            Int     @id @default(autoincrement())
+  name          String? @db.VarChar(25)
+  competitionid Int?
+  position      Int?
+}
+
+model teamsplayers {
+  pk       Int  @id @default(autoincrement())
+  playerid Int?
+  teamid   Int?
 }

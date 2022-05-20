@@ -6,12 +6,12 @@ import prisma from '../../lib/prisma'
 
 
 export async function getServerSideProps({ params }) {
-  // params.id = parseInt(params.id);
-  const player = await prisma.$queryRaw`SELECT Pk, Nick FROM Players WHERE Nick=${decodeURI(params.id)}`;
+  params.id = parseInt(params.id);
+  const player = await prisma.$queryRaw`SELECT Pk, Nick FROM Players WHERE Pk=${params.id}`;
   const matches = await prisma.$queryRaw`SELECT Matches.Pk AS Pk, result1, result2, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') , 'DD/MM/YYYY, HH24:MI:SS') AS ddate, team, (CASE WHEN (result1>result2 AND team=1) OR (result2>result1 AND team=2) THEN 'win' WHEN result1=result2 THEN 'draw' ELSE 'loss' END) AS result, (CASE WHEN Appearances.isGk = 1 AND ((team = 1 AND result2 = 0) OR (team = 2 AND result1=0)) THEN true ELSE false END) AS cs FROM Matches LEFT JOIN Appearances ON Matches.Pk = Appearances.MatchId WHERE Appearances.PlayerId=${player[0].pk} ORDER BY date DESC`;
   const goals = await prisma.$queryRaw`SELECT MatchId FROM Goals WHERE Scorer=${player[0].pk} AND Own=0;`
   const assists = await prisma.$queryRaw`SELECT MatchId FROM Goals WHERE Assister=${player[0].pk};`
-  const results = await prisma.$queryRaw`SELECT CompetitionId, Ended, SeriesId, Edition, Position, Series.Name AS Name, Series.Type AS Type, Appearances, Goals, Assists, Wins, Draws, Losses, CleanSheets, GkA FROM Stats LEFT JOIN Series ON Series.Pk = SeriesId WHERE Nick=${player[0].nick} AND Name IS NOT NULL ORDER BY Name ASC, Edition DESC;`;
+  const results = await prisma.$queryRaw`SELECT CompetitionId, Ended, SeriesId, Edition, Position, Series.Name AS Name, Series.Type AS Type, Appearances, Goals, Assists, Wins, Draws, Losses, CleanSheets, GkA, CASE WHEN Appearances > 0 THEN ROUND(CAST(ExtraWins AS decimal)/Appearances, 4) * 100 ELSE NULL END AS WinRate, CASE WHEN Gka>0 THEN (ROUND(CAST(CleanSheets AS decimal)/Gka, 4) * 100) ELSE NULL END AS CSPercent FROM Stats LEFT JOIN Series ON Series.Pk = SeriesId WHERE Nick=${player[0].nick} AND Name IS NOT NULL ORDER BY Name ASC, Edition DESC;`;
   return {
     props: { player: JSON.stringify(player), matches: JSON.stringify(matches), results: JSON.stringify(results), goals: JSON.stringify(goals), assists: JSON.stringify(assists) }, // will be passed to the page component as props
   }
@@ -43,15 +43,15 @@ function Player({ player, matches, results, goals, assists }) {
   } }, { field: 'ddate', headerName: "Date", flex: 1 }];
   columns.push({ field: 'pk', headerName: "", flex: 0.3, renderCell: (params) => (<a href={`/matches/${encodeURIComponent(params.row.pk)}`}>Details</a>) });
   columns.push({ field: 'pk2', headerName: "Download", flex: 0.3, renderCell: (params) => (<Link href={`/recordings/${params.row.pk}.hbr2`}><i className="bi bi-file-earmark-arrow-down"></i></Link>) });
-  let resultsColumns = [{ field: 'name', headerName: "Name", flex: 1, valueGetter: (params) => `${params.row.type.toUpperCase()} ${params.row.name} [${params.row.edition}]`}, { field: 'appearances', headerName: "Apps (GK)", flex: 0.4, valueGetter: (params) => `${params.row.appearances} (${params.row.gka})`}, { field: 'goals', headerName: "Goals", flex: 0.3}, { field: 'assists', headerName: "Assists", flex: 0.3}, { field: 'cleansheets', headerName: "CS", flex: 0.3}, { field: 'position', headerName: "Position", valueGetter: (params) => {if(params.row.type== 'cup') return ''; else return params.row.position}, flex: 0.3}];
+  let resultsColumns = [{ field: 'name', headerName: "Name", flex: 1, valueGetter: (params) => `${params.row.type.toUpperCase()} ${params.row.name} [${params.row.edition}]`, renderCell : params => (<Link href={`/competitions/${params.row.competitionid}`}>{params.value}</Link>)}, { field: 'appearances', headerName: "Apps (GK)", flex: 0.4, valueGetter: (params) => `${params.row.appearances} (${params.row.gka})`}, { field: 'goals', headerName: "Goals", flex: 0.3}, { field: 'assists', headerName: "Assists", flex: 0.3}, { field: 'cleansheets', headerName: "CS", flex: 0.3, hide: true}, { field: 'winrate', headerName: "%W", flex: 0.3}, { field: 'cspercent', headerName: "%CS", flex: 0.3}, { field: 'position', headerName: "Position", valueGetter: (params) => {if(params.row.type== 'cup') return ''; else return params.row.position}, flex: 0.3}];
   return (
     <div>
       <h3 style={{textAlign:'center'}}>{player[0].nick}</h3>
-    <div style={{display: 'flex', justifyContent: 'center'}}>
+    <div className='player-container'>
       <div className='card'>
         <h3>Results</h3>
         <div style={{ minWidth: '600px' }}>
-      <Tabela rows={resultsRows} columns={resultsColumns} pageSize={10} rowHeight={52} getRowClassName={(params) => params.row.ended ? `position-${params.row.position}-row` : null} />
+      <Tabela rows={resultsRows} columns={resultsColumns} pageSize={10} rowHeight={52} getRowClassName={(params) => params.row.ended && params.row.type=='liga' ? `position-${params.row.position}-row` : null} />
       </div>
       </div>
       <div className='card' style={{ justifyContent: 'center' }}>

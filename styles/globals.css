@@ -108,6 +108,22 @@ a {
   box-shadow: 0 0 25px 5px #000;
 }
 
+.player-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.faq-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.faq-container-item {
+  /* flex: 1 0; */
+}
+
 @media only screen and (max-width: 1000px) {
   .grid-container {
     height: 100vh;
@@ -125,6 +141,12 @@ a {
 
   .competition-main > * {
     height: 347px;
+  }
+  .player-container {
+    flex-direction: column;
+  }
+  .faq-container {
+    flex-direction: column;
   }
 }
 
@@ -280,9 +302,9 @@ a {
   grid-template-areas:
   "table card1"
   "table card2"
-  "table card3";  
+  "card3 card3";  
   grid-template-columns: 2fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
 }
 
 .competition-main > .card:nth-child(1) {
@@ -338,8 +360,59 @@ a {
   ;
 }
 
-.goal-list, .players-list{
+.goal-list{
   list-style-type: none;
   padding: 0;
   margin: 0;
+}
+
+.goal-list p{
+  padding: 0;
+  margin: 0.5rem 0;
+}
+
+.players-list {
+  list-style-type: none;
+  margin: 0 20px;
+  padding: 0;
+}
+
+.players-list p {
+  padding: 0;
+  margin: 0.5rem 0;
+  overflow: hidden;
+white-space: nowrap;
+}
+
+.player-link:hover {
+
+}
+
+.autocomplete-players{
+  color: white
+}
+
+.player-match-competition {
+  margin: 3px 0
+}
+
+.commands-list li{
+  max-width: 590px;
+}
+
+.copyright {
+  text-align: right;
+  padding: 5px 20px;
+  font-size: 0.85rem;
+  color: var(--alt-text);
+}
+
+.CookieConsent {
+  background-color: var(--bg-secondary) !important;
+  /* left: var(--drawer-width) !important; */
+}
+
+.CookieConsent button {
+  background-color: white !important;
+  box-shadow: 3px 3px #888888 !important;
 }
