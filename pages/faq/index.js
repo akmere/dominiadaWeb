@@ -21,7 +21,7 @@ export default function faq({commands, questions}) {
         <h1>FAQ</h1>
         <ul className='commands-list'>
           {questions.map(question => (
-          <li>
+          <li key={question.question}>
             <p style={{fontWeight: 'bold'}}>{question.question}</p>
             <p>{question.answer}</p>
           </li>))}
@@ -30,11 +30,11 @@ export default function faq({commands, questions}) {
       <div className='card faq-container-item'>
         <h1>Komendy</h1>
         {roles.map(role => (
-        <div>
+        <div key={role}>
           <h2 style={{textAlign: 'center'}}>{role}</h2>
           <ul className='commands-list'>
           {commands.filter(command => command.role == role).map(command => (
-          <li>
+          <li key={command.name}>
             <p style={{fontWeight: 'bold'}}>{command.name}</p>
             <p>{command.definition}</p>
           </li>))}

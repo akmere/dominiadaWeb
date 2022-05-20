@@ -32,7 +32,7 @@ export default function Match({ match, goals, appearances }) {
         <div style={{ display: 'flex', flexDirection: 'row', width:'100%', justifyContent:'center' }}>
           <ul className='players-list' style={{maxWidth:'150px', minWidth:'150px', padding: "0", textAlign: 'left'}}>
             {appearances.filter(a => a.team == 1).map(appearance => {
-              return (<li>
+              return (<li key={appearance.pk}>
                 <p>{getLink(appearance.playername, appearance.playerid)} {appearance.isgk ? `(GK)` : ``}</p>
               </li>)
             })}
@@ -40,7 +40,7 @@ export default function Match({ match, goals, appearances }) {
           <h2 style={{maxWidth:'150px', minWidth:'150px', textAlign:'center', alignSelf: 'center'}}>Red {match[0].result1}:{match[0].result2} Blue</h2>
           <ul className='players-list' style={{ maxWidth:'150px', minWidth:'150px', padding: "0", textAlign: 'right' }}>
             {appearances.filter(a => a.team == 2).map(appearance => {
-              return (<li>
+              return (<li key={appearance.pk}>
                 <p>{appearance.isgk ? `(GK)` : ``} {getLink(appearance.playername, appearance.playerid)}</p>
               </li>)
             })}
@@ -51,7 +51,7 @@ export default function Match({ match, goals, appearances }) {
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
           <ul className='goal-list'>
             {goals.sort((a,b) => {if(a.time > b.time) return 1; else return -1;}).map(goal => {
-              return (<li style={{display: 'flex'}}>
+              return (<li key={goal.pk} style={{display: 'flex'}}>
                 <p style={{fontWeight: 'bold'}}>{Math.floor(goal.time / 60)}:{Math.floor(goal.time % 60)}&nbsp;</p> <p style={{textAlign: 'center'}}> {getLink(goal.scorername, goal.scorer)} {goal.assistername ? <>({getLink(goal.assistername, goal.assister)})</> : ``} {goal.own ? `(OG)` : ``}</p>
               </li>)
             })}
