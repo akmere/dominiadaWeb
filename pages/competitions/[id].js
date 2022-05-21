@@ -8,13 +8,14 @@ import Tabela from '../../components/Tabela'
 import Link from 'next/link'
 import { EditNotifications } from '@mui/icons-material'
 import { useRouter } from 'next/router'
+import { Tooltip } from '@mui/material'
 
 export async function getStaticProps({ params }) {
     params.id = parseInt(params.id);
     const raw = await prisma.$queryRaw`SELECT PlayerId, Nick, Goals, Assists, CleanSheets, LostGoals, ExtraWins AS Wins, ExtraDraws AS Draws, ExtraLosses AS Losses, Appearances, CASE WHEN Appearances > 0 THEN ROUND(CAST(ExtraWins AS decimal)/Appearances, 4) * 100 ELSE NULL END AS WinRate, CASE WHEN Gka>0 THEN (ROUND(CAST(CleanSheets AS decimal)/Gka, 4) * 100) ELSE NULL END AS CSPercent, ROUND(Points) AS Points, ROUND(GkPoints) AS GkPoints, GKa FROM Stats WHERE CompetitionId=${params.id} ORDER BY Points DESC, Goals DESC, Assists DESC, CleanSheets DESC, Appearances ASC;`;
-    const cData = await prisma.$queryRaw`SELECT Competitions.Format AS Format, Series.Name AS Name, Competitions.TagId AS TagId, Series.Pk AS SeriesId, Series.Type AS Type, Competitions.Edition AS Edition FROM Competitions LEFT JOIN Series ON Competitions.SeriesId = Series.Pk WHERE Competitions.Pk = ${params.id};`;
+    const cData = await prisma.$queryRaw`SELECT Goal, Assist, Win, Draw, Loss, CleanSheet, Competitions.Format AS Format, Series.Name AS Name, Competitions.TagId AS TagId, Series.Pk AS SeriesId, Series.Type AS Type, Competitions.Edition AS Edition FROM Competitions LEFT JOIN Series ON Competitions.SeriesId = Series.Pk WHERE Competitions.Pk = ${params.id};`;
     const editions = await prisma.$queryRaw`SELECT Pk, Edition FROM Competitions WHERE SeriesId=${cData[0].seriesid} ORDER BY Edition DESC;`;
-    const matches = await prisma.$queryRaw`SELECT Pk, result1, result2, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS'), 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk IN (SELECT MatchId FROM Matches_Tags WHERE TagId=${cData[0].tagid}) ORDER BY Date DESC;`;
+    const matches = await prisma.$queryRaw`SELECT Pk, result1, result2, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk IN (SELECT MatchId FROM Matches_Tags WHERE TagId=${cData[0].tagid}) ORDER BY Date DESC;`;
     const appearances = await prisma.$queryRaw`SELECT Appearances.* FROM Appearances LEFT JOIN Matches ON Appearances.MatchId = Matches.Pk LEFT JOIN Matches_Tags ON Matches.Pk = Matches_Tags.MatchId WHERE Matches_Tags.TagId=${cData[0].tagid} ORDER BY Matches.Date DESC;`
 
 
@@ -61,6 +62,8 @@ function Competition({ raw, cData, editions, gkData, scorersData, matches, appea
     let startDate = matches[0] ? matches[matches.length - 1].ddate.substring(0, 10) : "";
     let endDate = matches[0] ? matches[0].ddate.substring(0, 10) : "";
     let intervalString = startDate == endDate ? `${startDate}` : `${startDate} - ${endDate}`
+
+    let pointsText = `(${cData[0].goal} * G + ${cData[0].assist} * A + ${cData[0].cleansheet} * CS + ${cData[0].win} * W + ${cData[0].draw} * D + ${cData[0].loss} * L) * %W`;
     let rows = raw.map((row, index) => ({ id: index, position: index + 1, ...row }));
     let gkRows = gkData.map((row, index) => ({ id: index, position: index + 1, ...row }));
     let scorersRows = scorersData.map((row, index) => ({ id: index, position: index + 1, ...row }));
@@ -75,10 +78,16 @@ function Competition({ raw, cData, editions, gkData, scorersData, matches, appea
     let gkColumns = [{ field: 'position', headerName: "#", flex: 0.3 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.row.playerid)}`}>{params.value}</Link>) }, { field: "gka", headerName: "GKA", flex: 0.5 }, { field: "cleansheets", headerName: "CS", flex: 0.5 }, { field: "cspercent", headerName: "%CS", flex: 0.7 }, { field: "lostgoals", headerName: "LG", flex: 0.5 }];
     let matchesColumns = [{field: 'reds', headerName: "", flex:1,renderCell: (params) => (<div style={{display:'flex', flexDirection:'column', alignItems: 'center', width: '100%'}}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 1).map(appearance => (<p key={appearance.pk} className='player-match-competition'> {appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)},{field: 'result1', headerName: "Red", flex:0.2, align: 'center', headerAlign: 'center'},{field: 'result2', headerName: "Blue", flex: 0.2, align: 'center', headerAlign: 'center'},{field: 'blues', headerName: "", flex:1, renderCell: (params) => (<div style={{display:'flex', flexDirection:'column', alignItems: 'center', width: '100%'}}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 2).map(appearance => (<p key={appearance.pk} className='player-match-competition'>{appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)},{field: 'ddate', headerName: "Date", flex: 1}]
     matchesColumns.push({field: 'pk', headerName: "", flex: 0.3, renderCell: (params) => (<a href={`/matches/${encodeURIComponent(params.row.pk)}`}>Details</a>)});
+    // matchesColumns.push({ field: 'pk2', headerName: "Download", flex: 0.3, renderCell: async (params) => {
+    //     const recordingAvailable = await (await fetch(`http://localhost:3000/api/recordings/${matchId}`)).json();
+    //     (<Link href={`/recordings/${params.row.pk}.hbr2`}><i className={`bi bi-file-earmark-arrow-down ` + recordingAvailable ? 'existing-recording' : 'nonexisting-recording'}></i></Link>)}
+    //  });
     if (cData[0].type == 'liga') 
     {
         generalColumns.push({ field: "winrate", headerName: "%W", flex: 0.5  });
-        generalColumns.push({ field: "points", headerName: "Points", flex: 0.5  });
+        generalColumns.push({ field: "points", headerName: "Points", flex: 0.5, renderHeader: (params) => (
+            cData[0].type == 'liga' ? <Tooltip title={pointsText}><strong>Points</strong></Tooltip> : <strong>Points</strong>            
+        )  });
         gkColumns.push({ field: "gkpoints", headerName: "Points", flex: 0.7 });
     }
     return (
@@ -95,6 +104,7 @@ function Competition({ raw, cData, editions, gkData, scorersData, matches, appea
                     </select>
                 <p>{intervalString}</p>
                 </div>
+                {/* {cData[0].type == "liga" ? <div className='competition-rules'><p>{`Points = %W * (${cData[0].goal} * Goals + ${cData[0].assist} * Assists + ${cData[0].cleansheet} * CS + ${cData[0].win} * W + ${cData[0].draw} * D + ${cData[0].loss} * L)`}</p></div> : ``} */}
                 <Tabela rows={rows} columns={generalColumns} pageSize={10} rowHeight={52}/>
             </div>
             <div className='card'>

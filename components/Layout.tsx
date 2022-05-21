@@ -102,7 +102,7 @@ function Layout({ children, window, series, competitions, players }) {
                         </ul>
                     </li>
                     <li className='nav-item'>
-                        <p className='nav-header' onClick={seriesContainerOnClick}>TURNIEJE</p>
+                        <p className='nav-header' onClick={seriesContainerOnClick}>TURNIEJ</p>
                         <ul className='seriesContainer open'>
                             {series.map(s => (
                                 s.type != 'liga' &&

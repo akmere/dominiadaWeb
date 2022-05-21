@@ -7,15 +7,17 @@ import getLink from '../../lib/utilities'
 
 export async function getServerSideProps({ params }) {
   const matchId = parseInt(params.id);
-  const match = await prisma.$queryRaw`SELECT *, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') , 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk=${matchId}`;
+  const match = await prisma.$queryRaw`SELECT *, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk=${matchId}`;
   const goals = await prisma.$queryRaw`SELECT * FROM Goals WHERE MatchId=${matchId}`;
   const appearances = await prisma.$queryRaw`SELECT * FROM Appearances WHERE MatchId=${matchId}`;
+  const recordingAvailable = await (await fetch(`http://localhost:3000/api/recordings/${matchId}`)).json();
+  console.log(recordingAvailable);
   return {
-    props: { match: JSON.stringify(match), goals: JSON.stringify(goals), appearances: JSON.stringify(appearances), },
+    props: { match: JSON.stringify(match), goals: JSON.stringify(goals), appearances: JSON.stringify(appearances), recordingAvailable : recordingAvailable},
   }
 }
 
-export default function Match({ match, goals, appearances }) {
+export default function Match({ match, goals, appearances, recordingAvailable }) {
   match = JSON.parse(match);
   goals = JSON.parse(goals);
   appearances = JSON.parse(appearances);
@@ -26,6 +28,7 @@ export default function Match({ match, goals, appearances }) {
         <iframe src={`/falafel/costam.html?id=${router.query.id}`} width={'1500px'} height={'850px'}></iframe>
       </div>
       <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '600px' }}>
+        <Link href={`/recordings/${match[0].pk}.hbr2`}><i style={{color: recordingAvailable ? 'lightgreen' : '#FF7F7F'}} className="bi bi-file-earmark-arrow-down"></i></Link>
         <h2>{match[0].ddate}</h2>
         <h3>{match[0].stadium}</h3>
         <h3>{match[0].format} vs. {match[0].format}</h3>        

@@ -124,32 +124,6 @@ a {
   /* flex: 1 0; */
 }
 
-@media only screen and (max-width: 1000px) {
-  .grid-container {
-    height: 100vh;
-    min-height: -webkit-fill-available;
-  }
-  .navbar {
-    height: 100vh;
-    min-height: -webkit-fill-available;
-  }
-  .competition-main {
-    display: flex !important;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .competition-main > * {
-    height: 347px;
-  }
-  .player-container {
-    flex-direction: column;
-  }
-  .faq-container {
-    flex-direction: column;
-  }
-}
-
 .navbar-nav {
   list-style: none;
   padding: 0;
@@ -415,4 +389,66 @@ white-space: nowrap;
 .CookieConsent button {
   background-color: white !important;
   box-shadow: 3px 3px #888888 !important;
+}
+
+.competition-rules p{
+  margin: 0;
+  margin-bottom: 5px;
+  color: var(--alt-text);
+}
+
+.index-grid {
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.counter-icon {
+  font-size: 3rem;
+  color: lightblue;
+}
+
+.statistics-number {
+  font-size: 3rem;
+  /* font-weight: bold; */
+  margin: 0.5rem 0;
+  /* font-family: monospace; */
+}
+
+.counter-title {
+  margin: 0.5rem 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+@media only screen and (max-width: 1000px) {
+  .grid-container {
+    height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  .navbar {
+    height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  .competition-main {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .competition-main > * {
+    height: 347px;
+  }
+  .player-container {
+    flex-direction: column;
+  }
+  .faq-container {
+    flex-direction: column;
+  }
+
+  .index-grid {
+    display:grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 1fr;
+  }
 }
