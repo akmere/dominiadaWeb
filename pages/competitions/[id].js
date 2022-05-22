@@ -18,9 +18,12 @@ export async function getStaticProps({ params }) {
     const matches = await prisma.$queryRaw`SELECT Pk, result1, result2, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk IN (SELECT MatchId FROM Matches_Tags WHERE TagId=${cData[0].tagid}) ORDER BY Date DESC;`;
     const appearances = await prisma.$queryRaw`SELECT Appearances.* FROM Appearances LEFT JOIN Matches ON Appearances.MatchId = Matches.Pk LEFT JOIN Matches_Tags ON Matches.Pk = Matches_Tags.MatchId WHERE Matches_Tags.TagId=${cData[0].tagid} ORDER BY Matches.Date DESC;`
 
-
     let gkAppsMargin = 1;
     if(cData[0].type == 'liga') gkAppsMargin = 20;
+    if(cData[0].type == 'ranking') {
+        raw.map(p => p.ranking = appearances.filter(a => a.playerid == p.playerid)[0].ranking);
+        raw.sort((a,b) => a.ranking == b.ranking ? 0 : a.ranking > b.ranking ? -1 : 1);
+    }
 
     const gkData = raw.slice().filter((row) => row.gka >= gkAppsMargin).sort((a, b) => { if ((cData[0].type == 'liga' && (a.gkpoints > b.gkpoints)) || (cData[0].type != 'liga' && a.cleansheets > b.cleansheets)) return -1; else return 1; })
     const scorersData = raw.slice().filter(row => row.goals > 0).sort((a, b) => { if (a.goals > b.goals || (a.goals == b.goals && a.assists > b.assists)) return -1; else return 1; })
@@ -35,7 +38,8 @@ export async function getStaticProps({ params }) {
             scorersData: JSON.stringify(scorersData, (key, value) => (typeof value === 'bigint' ? value.toString() : value)),
             matches: JSON.stringify(matches, (key, value) => (typeof value === 'bigint' ? value.toString() : value)),
             appearances: JSON.stringify(appearances, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
-        }, // will be passed to the page component as props
+        }, 
+        revalidate: 180// will be passed to the page component as props
     }
 }
 
@@ -77,7 +81,7 @@ function Competition({ raw, cData, editions, gkData, scorersData, matches, appea
     let scorersColumns = [{ field: 'position', headerName: "#", flex: 0.1 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.row.playerid)}`}>{params.value}</Link>) }, { field: "goals", headerName: "Goals", flex: 0.5  }, { field: "assists", headerName: "Assists", flex: 0.5  }];
     let gkColumns = [{ field: 'position', headerName: "#", flex: 0.3 }, { field: "nick", headerName: "Nick", flex: 1, renderCell: (params, event) => (<Link href={`/players/${encodeURIComponent(params.row.playerid)}`}>{params.value}</Link>) }, { field: "gka", headerName: "GKA", flex: 0.5 }, { field: "cleansheets", headerName: "CS", flex: 0.5 }, { field: "cspercent", headerName: "%CS", flex: 0.7 }, { field: "lostgoals", headerName: "LG", flex: 0.5 }];
     let matchesColumns = [{field: 'reds', headerName: "", flex:1,renderCell: (params) => (<div style={{display:'flex', flexDirection:'column', alignItems: 'center', width: '100%'}}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 1).map(appearance => (<p key={appearance.pk} className='player-match-competition'> {appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)},{field: 'result1', headerName: "Red", flex:0.2, align: 'center', headerAlign: 'center'},{field: 'result2', headerName: "Blue", flex: 0.2, align: 'center', headerAlign: 'center'},{field: 'blues', headerName: "", flex:1, renderCell: (params) => (<div style={{display:'flex', flexDirection:'column', alignItems: 'center', width: '100%'}}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 2).map(appearance => (<p key={appearance.pk} className='player-match-competition'>{appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)},{field: 'ddate', headerName: "Date", flex: 1}]
-    matchesColumns.push({field: 'pk', headerName: "", flex: 0.3, renderCell: (params) => (<a href={`/matches/${encodeURIComponent(params.row.pk)}`}>Details</a>)});
+    matchesColumns.push({field: 'pk', headerName: "", flex: 0.3, renderCell: (params) => (<Link href={`/matches/${encodeURIComponent(params.row.pk)}`}>Details</Link>)});
     // matchesColumns.push({ field: 'pk2', headerName: "Download", flex: 0.3, renderCell: async (params) => {
     //     const recordingAvailable = await (await fetch(`http://localhost:3000/api/recordings/${matchId}`)).json();
     //     (<Link href={`/recordings/${params.row.pk}.hbr2`}><i className={`bi bi-file-earmark-arrow-down ` + recordingAvailable ? 'existing-recording' : 'nonexisting-recording'}></i></Link>)}
@@ -89,6 +93,10 @@ function Competition({ raw, cData, editions, gkData, scorersData, matches, appea
             cData[0].type == 'liga' ? <Tooltip title={pointsText}><strong>Points</strong></Tooltip> : <strong>Points</strong>            
         )  });
         gkColumns.push({ field: "gkpoints", headerName: "Points", flex: 0.7 });
+    }
+    if(cData[0].type == 'ranking') {
+        generalColumns.push({ field: "winrate", headerName: "%W", flex: 0.5  });
+        generalColumns.push({ field: "ranking", headerName: "ELO", flex: 0.5});
     }
     return (
         <main className='competition-main'>

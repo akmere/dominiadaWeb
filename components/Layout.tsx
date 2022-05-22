@@ -13,6 +13,7 @@ import { flexbox } from '@mui/system'
 import { ClassNames, ThemeContext } from '@emotion/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import Image from 'next/image';
 
 
 function Layout({ children, window, series, competitions, players }) {
@@ -83,13 +84,13 @@ function Layout({ children, window, series, competitions, players }) {
                     <li>  
                         <Link href="/">
                         <a className='logo' >
-                            <img src="/croppedRectangle.png" />
+                            <img width="100%" src="/croppedRectangle.png" />                            
                         </a>
                         </Link>
                     </li>
                     <li className='nav-item'>
                         <p className='nav-header' onClick={seriesContainerOnClick}>LIGA</p>
-                        <ul className='seriesContainer open'>
+                        <ul className='seriesContainer'>
                             {series.map(s => (
                                 s.type == 'liga' &&
                                 <li>
@@ -103,9 +104,9 @@ function Layout({ children, window, series, competitions, players }) {
                     </li>
                     <li className='nav-item'>
                         <p className='nav-header' onClick={seriesContainerOnClick}>TURNIEJ</p>
-                        <ul className='seriesContainer open'>
+                        <ul className='seriesContainer'>
                             {series.map(s => (
-                                s.type != 'liga' &&
+                                s.type == 'cup' &&
                                 <li>
                                     <Link href={`/competitions/${competitions.filter(c => c.seriesid == s.pk)[0].pk}`}>
                                         <a>{s.name}</a>
@@ -114,6 +115,20 @@ function Layout({ children, window, series, competitions, players }) {
                             ))}
                         </ul>
                     </li>
+                    <li className='nav-item'>
+                        <p className='nav-header' onClick={seriesContainerOnClick}>RANKING</p>
+                        <ul className='seriesContainer'>
+                            {series.map(s => (
+                                s.type == 'ranking' &&
+                                <li>
+                                    <Link href={`/competitions/${competitions.filter(c => c.seriesid == s.pk)[0].pk}`}>
+                                        <a>{s.name}</a>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                    
 
                     {/* <li className='nav-item'>
                         <Link href='/archive'>

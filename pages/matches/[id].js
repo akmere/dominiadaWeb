@@ -28,7 +28,7 @@ export default function Match({ match, goals, appearances, recordingAvailable })
         <iframe src={`/falafel/costam.html?id=${router.query.id}`} width={'1500px'} height={'850px'}></iframe>
       </div>
       <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '600px' }}>
-        <Link href={`/recordings/${match[0].pk}.hbr2`}><i style={{color: recordingAvailable ? 'lightgreen' : '#FF7F7F'}} className="bi bi-file-earmark-arrow-down"></i></Link>
+        <a className= {recordingAvailable ? `` : `disabled-link`} href={`/api/getRecording/${match[0].pk}`}><i style={{color: recordingAvailable ? 'lightgreen' : '#FF7F7F'}} className="bi bi-file-earmark-arrow-down"></i></a>
         <h2>{match[0].ddate}</h2>
         <h3>{match[0].stadium}</h3>
         <h3>{match[0].format} vs. {match[0].format}</h3>        
@@ -36,7 +36,7 @@ export default function Match({ match, goals, appearances, recordingAvailable })
           <ul className='players-list' style={{maxWidth:'150px', minWidth:'150px', padding: "0", textAlign: 'left'}}>
             {appearances.filter(a => a.team == 1).map(appearance => {
               return (<li key={appearance.pk}>
-                <p>{getLink(appearance.playername, appearance.playerid)} {appearance.isgk ? `(GK)` : ``}</p>
+                <p>{getLink(appearance.playername, appearance.playerid)} {appearance.isgk && match[0].format > 1  ? `(GK)` : ``}</p>
               </li>)
             })}
           </ul>
@@ -44,7 +44,7 @@ export default function Match({ match, goals, appearances, recordingAvailable })
           <ul className='players-list' style={{ maxWidth:'150px', minWidth:'150px', padding: "0", textAlign: 'right' }}>
             {appearances.filter(a => a.team == 2).map(appearance => {
               return (<li key={appearance.pk}>
-                <p>{appearance.isgk ? `(GK)` : ``} {getLink(appearance.playername, appearance.playerid)}</p>
+                <p>{appearance.isgk && match[0].format > 1 ? `(GK)` : ``} {getLink(appearance.playername, appearance.playerid)}</p>
               </li>)
             })}
           </ul>

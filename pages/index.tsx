@@ -23,7 +23,8 @@ export async function getStaticProps() {
             matches: JSON.stringify(matches, (key, value) => (typeof value === 'bigint' ? value.toString() : value)),
             appearances: JSON.stringify(appearances, (key, value) => (typeof value === 'bigint' ? value.toString() : value)),
             statistics : statistics,
-        }, // will be passed to the page component as props
+        }, 
+        revalidate: 180 // will be passed to the page component as props
     }
 }
 
@@ -33,23 +34,23 @@ function Home({ matches, appearances, statistics }) {
     appearances = appearances ? JSON.parse(appearances) : [];
     let matchesRows = matches.map((row, index) => ({ id: index, position: index + 1, ...row }));  
     let matchesColumns = [{field: 'reds', headerName: "", flex:1,renderCell: (params) => (<div style={{display:'flex', flexDirection:'column', alignItems: 'center', width: '100%'}}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 1).map(appearance => (<p key={appearance.pk} className='player-match-competition'> {appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)},{field: 'result1', headerName: "Red", flex:0.2, align: 'center', headerAlign: 'center'},{field: 'result2', headerName: "Blue", flex: 0.2, align: 'center', headerAlign: 'center'},{field: 'blues', headerName: "", flex:1, renderCell: (params) => (<div style={{display:'flex', flexDirection:'column', alignItems: 'center', width: '100%'}}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 2).map(appearance => (<p key={appearance.pk} className='player-match-competition'>{appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)},{field: 'ddate', headerName: "Date", flex: 1}]
-    matchesColumns.push({field: 'pk', headerName: "", flex: 0.3, renderCell: (params) => (<a href={`/matches/${encodeURIComponent(params.row.pk)}`}>Details</a>)});
+    matchesColumns.push({field: 'pk', headerName: "", flex: 0.3, renderCell: (params) => (<Link href={`/matches/${encodeURIComponent(params.row.pk)}`}>Details</Link>)});
     // matchesColumns.push({ field: 'pk2', headerName: "Download", flex: 0.3, renderCell: (params) => (<Link href={`/recordings/${params.row.pk}.hbr2`}><i className="bi bi-file-earmark-arrow-down"></i></Link>) });
     return (
         <main className='index-main'>
             <div className='index-grid'>
                 <div className='card'>
-                <i class="bi bi-activity counter-icon"></i>
+                <i className="bi bi-activity counter-icon"></i>
                     <p className='statistics-number'>{statistics[0].matchescount}</p>
                     <p className='counter-title'>Mecze</p>
                 </div>
                 <div className='card'>
-                <i class="bi bi-arrow-through-heart-fill counter-icon"></i>
+                <i className="bi bi-arrow-through-heart-fill counter-icon"></i>
                 <p className='statistics-number'>{statistics[0].goalscount}</p>
                     <p className='counter-title'>Bramki</p>
                 </div>
                 <div className='card'>
-                <i class="bi bi-emoji-heart-eyes counter-icon"></i>
+                <i className="bi bi-emoji-heart-eyes counter-icon"></i>
                 <p className='statistics-number'>{statistics[0].playerscount}</p>
                     <p className='counter-title'>Zawodnicy</p>
                 </div>

@@ -57,7 +57,6 @@ a {
 }
 
 .logo img{
-  width: 100%;
   background-color: var(--bg-tertiary);
 }
 
@@ -109,9 +108,13 @@ a {
 }
 
 .player-container {
-  display: flex;
-  flex-direction: row;
+  display: grid;
   justify-content: center;
+  grid-template-areas: 
+  "results ranking"
+  "matches matches";
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 }
 
 .faq-container {
@@ -421,6 +424,22 @@ white-space: nowrap;
   font-weight: bold;
 }
 
+.player-results {
+  grid-area: results;
+}
+
+.player-ranking {
+  grid-area: ranking;
+}
+
+.player-matches {
+  grid-area: matches;
+}
+
+.disabled-link {
+  pointer-events: none;
+}
+
 @media only screen and (max-width: 1000px) {
   .grid-container {
     height: 100vh;
@@ -440,6 +459,7 @@ white-space: nowrap;
     height: 347px;
   }
   .player-container {
+    display: flex;
     flex-direction: column;
   }
   .faq-container {

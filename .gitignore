@@ -33,3 +33,10 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+
+
+.env
+ladominiada.sql
+public/recordings/
+todo.txt
