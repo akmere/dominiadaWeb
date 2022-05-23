@@ -11,9 +11,10 @@ import { EditNotifications } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 
 export async function getStaticProps() { 
-    const matches = await prisma.$queryRaw`SELECT Pk, result1, result2, date, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches ORDER BY Date DESC LIMIT 100;`;
-    const statistics = await prisma.$queryRaw`SELECT COUNT(*) AS matchesCount, SUM(result1 + result2) as goalsCount FROM Matches`;
-    const playersCount = await prisma.$queryRaw`SELECT Count(*) AS playersCount FROM Players;`
+    let matches = prisma.$queryRaw`SELECT Pk, result1, result2, date, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches ORDER BY Date DESC LIMIT 100;`;
+    let statistics = prisma.$queryRaw`SELECT COUNT(*) AS matchesCount, SUM(result1 + result2) as goalsCount FROM Matches`;
+    let playersCount = prisma.$queryRaw`SELECT Count(*) AS playersCount FROM Players;`;
+    [matches, statistics, playersCount] = await Promise.all([matches, statistics, playersCount]);
     statistics[0].playerscount = playersCount[0].playerscount;
     let lastDate = matches[99].date;
     const appearances = await prisma.$queryRaw`SELECT Matches.Pk AS Pk, Appearances.* FROM Appearances LEFT JOIN Matches ON Appearances.MatchId = Matches.Pk WHERE Matches.date >= ${lastDate} ORDER BY Matches.Date DESC;`;

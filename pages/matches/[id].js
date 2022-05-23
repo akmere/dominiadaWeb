@@ -7,11 +7,11 @@ import getLink from '../../lib/utilities'
 
 export async function getServerSideProps({ params }) {
   const matchId = parseInt(params.id);
-  const match = await prisma.$queryRaw`SELECT *, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk=${matchId}`;
-  const goals = await prisma.$queryRaw`SELECT * FROM Goals WHERE MatchId=${matchId}`;
-  const appearances = await prisma.$queryRaw`SELECT * FROM Appearances WHERE MatchId=${matchId}`;
-  const recordingAvailable = await (await fetch(`http://localhost:3000/api/recordings/${matchId}`)).json();
-  console.log(recordingAvailable);
+  let match = await prisma.$queryRaw`SELECT *, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk=${matchId}`;
+  let goals = await prisma.$queryRaw`SELECT * FROM Goals WHERE MatchId=${matchId}`;
+  let appearances = await prisma.$queryRaw`SELECT * FROM Appearances WHERE MatchId=${matchId}`;
+  let recordingAvailable = await (await fetch(`http://localhost:3000/api/recordings/${matchId}`)).json();
+  [match, goals, appearances, recordingAvailable] = await Promise.all([match, goals, appearances, recordingAvailable]);
   return {
     props: { match: JSON.stringify(match), goals: JSON.stringify(goals), appearances: JSON.stringify(appearances), recordingAvailable : recordingAvailable},
   }

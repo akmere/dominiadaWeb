@@ -8,14 +8,16 @@ datasource db {
 }
 
 model appearances {
-  pk         Int      @id @default(autoincrement())
-  matchid    Int?
-  team       Int?
-  playerid   Int?
-  playername String?  @db.VarChar(50)
-  isgk       Int?
-  matches    matches? @relation(fields: [matchid], references: [pk], onDelete: NoAction)
-  players    players? @relation(fields: [playerid], references: [pk], onDelete: NoAction)
+  pk             Int      @id @default(autoincrement())
+  matchid        Int?
+  team           Int?
+  playerid       Int?
+  playername     String?  @db.VarChar(50)
+  isgk           Int?
+  ranking        Int?
+  rankingmatches Int?
+  matches        matches? @relation(fields: [matchid], references: [pk], onDelete: NoAction)
+  players        players? @relation(fields: [playerid], references: [pk], onDelete: NoAction)
 }
 
 model ban_history {
@@ -55,18 +57,11 @@ model competitions {
   datefrom              BigInt?
   dateto                BigInt?
   winrateexponentiation Int?
-  seriesid              Int?
   edition               Int?
+  seriesid              Int?
   ended                 Boolean?
   tags                  tags?     @relation(fields: [tagid], references: [pk], onDelete: NoAction)
   matches               matches[]
-}
-
-model competitionsseries {
-  pk            Int  @id
-  competitionid Int?
-  seriesid      Int?
-  edition       Int?
 }
 
 model formats {
@@ -157,17 +152,4 @@ model tags {
   name         String?        @unique @db.VarChar(50)
   competitions competitions[]
   matches_tags matches_tags[]
-}
-
-model teams {
-  pk            Int     @id @default(autoincrement())
-  name          String? @db.VarChar(25)
-  competitionid Int?
-  position      Int?
-}
-
-model teamsplayers {
-  pk       Int  @id @default(autoincrement())
-  playerid Int?
-  teamid   Int?
 }

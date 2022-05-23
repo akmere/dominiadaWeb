@@ -51,4 +51,8 @@ MyApp.getInitialProps = async (appContext) => {
   return { appProps, series, competitions, players }
 }
 
+export function reportWebVitals(metric) {
+  console.log(metric)
+}
+
 export default MyApp

@@ -1,7 +1,7 @@
 import React from 'react'
 import fs from 'fs';
 
-export async function getServerSideProps(context) {
+export async function getStaticProps(context) {
   const commandsPath = `public/commands.json`;
   var commandsData = fs.readFileSync(commandsPath, 'utf8');
   var commandsJson = JSON.parse(commandsData);

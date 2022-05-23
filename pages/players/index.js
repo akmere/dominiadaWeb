@@ -4,10 +4,11 @@ import Tabela from '../../components/Tabela'
 import Link from 'next/link';
 import getLink from '../../lib/utilities'
 
-export async function getServerSideProps({ params }) {
+export async function getStaticProps({ params }) {
     const players = await prisma.$queryRaw`SELECT Pk AS Id, Nick, Role, TO_CHAR(TO_TIMESTAMP(RegisteredOn::VARCHAR(25), 'YYYYMMDDHH24MISS'), 'DD/MM/YYYY, HH24:MI:SS') AS RegisteredOn FROM Players ORDER BY Pk ASC`;
     return {
-        props: {players: JSON.stringify(players) }
+        props: {players: JSON.stringify(players) },        
+        revalidate: 300
     }
 }
 

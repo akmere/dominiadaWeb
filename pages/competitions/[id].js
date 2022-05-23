@@ -12,11 +12,13 @@ import { Tooltip } from '@mui/material'
 
 export async function getStaticProps({ params }) {
     params.id = parseInt(params.id);
-    const raw = await prisma.$queryRaw`SELECT PlayerId, Nick, Goals, Assists, CleanSheets, LostGoals, ExtraWins AS Wins, ExtraDraws AS Draws, ExtraLosses AS Losses, Appearances, CASE WHEN Appearances > 0 THEN ROUND(CAST(ExtraWins AS decimal)/Appearances, 4) * 100 ELSE NULL END AS WinRate, CASE WHEN Gka>0 THEN (ROUND(CAST(CleanSheets AS decimal)/Gka, 4) * 100) ELSE NULL END AS CSPercent, ROUND(Points) AS Points, ROUND(GkPoints) AS GkPoints, GKa FROM Stats WHERE CompetitionId=${params.id} ORDER BY Points DESC, Goals DESC, Assists DESC, CleanSheets DESC, Appearances ASC;`;
-    const cData = await prisma.$queryRaw`SELECT Goal, Assist, Win, Draw, Loss, CleanSheet, Competitions.Format AS Format, Series.Name AS Name, Competitions.TagId AS TagId, Series.Pk AS SeriesId, Series.Type AS Type, Competitions.Edition AS Edition FROM Competitions LEFT JOIN Series ON Competitions.SeriesId = Series.Pk WHERE Competitions.Pk = ${params.id};`;
-    const editions = await prisma.$queryRaw`SELECT Pk, Edition FROM Competitions WHERE SeriesId=${cData[0].seriesid} ORDER BY Edition DESC;`;
-    const matches = await prisma.$queryRaw`SELECT Pk, result1, result2, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk IN (SELECT MatchId FROM Matches_Tags WHERE TagId=${cData[0].tagid}) ORDER BY Date DESC;`;
-    const appearances = await prisma.$queryRaw`SELECT Appearances.* FROM Appearances LEFT JOIN Matches ON Appearances.MatchId = Matches.Pk LEFT JOIN Matches_Tags ON Matches.Pk = Matches_Tags.MatchId WHERE Matches_Tags.TagId=${cData[0].tagid} ORDER BY Matches.Date DESC;`
+    const cData = await prisma.$queryRaw`SELECT Goal, Assist, Win, Draw, Loss, CleanSheet, Competitions.Format AS Format, Series.Name AS Name, Competitions.TagId AS TagId, Series.Pk AS SeriesId, Series.Type AS Type, Competitions.Edition AS Edition FROM Competitions LEFT JOIN Series ON Competitions.SeriesId = Series.Pk WHERE Competitions.Pk = ${params.id};`;    
+    let raw = prisma.$queryRaw`SELECT PlayerId, Nick, Goals, Assists, CleanSheets, LostGoals, ExtraWins AS Wins, ExtraDraws AS Draws, ExtraLosses AS Losses, Appearances, CASE WHEN Appearances > 0 THEN ROUND(CAST(ExtraWins AS decimal)/Appearances, 4) * 100 ELSE NULL END AS WinRate, CASE WHEN Gka>0 THEN (ROUND(CAST(CleanSheets AS decimal)/Gka, 4) * 100) ELSE NULL END AS CSPercent, ROUND(Points) AS Points, ROUND(GkPoints) AS GkPoints, GKa FROM Stats WHERE CompetitionId=${params.id} ORDER BY Points DESC, Goals DESC, Assists DESC, CleanSheets DESC, Appearances ASC;`;    
+    let editions = prisma.$queryRaw`SELECT Pk, Edition FROM Competitions WHERE SeriesId=${cData[0].seriesid} ORDER BY Edition DESC;`;
+    let matches = prisma.$queryRaw`SELECT Pk, result1, result2, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk IN (SELECT MatchId FROM Matches_Tags WHERE TagId=${cData[0].tagid}) ORDER BY Date DESC;`;
+    let appearances = prisma.$queryRaw`SELECT Appearances.* FROM Appearances LEFT JOIN Matches ON Appearances.MatchId = Matches.Pk LEFT JOIN Matches_Tags ON Matches.Pk = Matches_Tags.MatchId WHERE Matches_Tags.TagId=${cData[0].tagid} ORDER BY Matches.Date DESC;`;
+
+    [raw, editions, matches, appearances] = await Promise.all([raw, editions, matches, appearances]);
 
     let gkAppsMargin = 1;
     if(cData[0].type == 'liga') gkAppsMargin = 20;

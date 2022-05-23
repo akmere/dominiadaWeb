@@ -14,6 +14,7 @@ import { ClassNames, ThemeContext } from '@emotion/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Image from 'next/image';
+import logoPic from '../public/croppedRectangle.png'
 
 
 function Layout({ children, window, series, competitions, players }) {
@@ -84,7 +85,7 @@ function Layout({ children, window, series, competitions, players }) {
                     <li>  
                         <Link href="/">
                         <a className='logo' >
-                            <img width="100%" src="/croppedRectangle.png" />                            
+                            <Image src={logoPic} atl="logo" />                            
                         </a>
                         </Link>
                     </li>
@@ -93,7 +94,7 @@ function Layout({ children, window, series, competitions, players }) {
                         <ul className='seriesContainer'>
                             {series.map(s => (
                                 s.type == 'liga' &&
-                                <li>
+                                <li key={s.pk}>
                                     <Link href={`/competitions/${competitions.filter(c => c.seriesid == s.pk)[0].pk}`}>
                                         <a>{s.name}</a>
                                     </Link>
@@ -107,7 +108,7 @@ function Layout({ children, window, series, competitions, players }) {
                         <ul className='seriesContainer'>
                             {series.map(s => (
                                 s.type == 'cup' &&
-                                <li>
+                                <li key={s.pk}>
                                     <Link href={`/competitions/${competitions.filter(c => c.seriesid == s.pk)[0].pk}`}>
                                         <a>{s.name}</a>
                                     </Link>
@@ -120,7 +121,7 @@ function Layout({ children, window, series, competitions, players }) {
                         <ul className='seriesContainer'>
                             {series.map(s => (
                                 s.type == 'ranking' &&
-                                <li>
+                                <li key={s.pk}>
                                     <Link href={`/competitions/${competitions.filter(c => c.seriesid == s.pk)[0].pk}`}>
                                         <a>{s.name}</a>
                                     </Link>
