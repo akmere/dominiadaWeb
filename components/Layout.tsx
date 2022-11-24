@@ -83,10 +83,8 @@ function Layout({ children, window, series, competitions, players }) {
                         </div>
                     </li>
                     <li>  
-                        <Link href="/">
-                        <a className='logo' >
-                            <Image src={logoPic} atl="logo" />                            
-                        </a>
+                        <Link href="/" className='logo'>
+                            <Image src={logoPic} atl="logo" layout='responsive' objectFit='contain'/>        
                         </Link>
                     </li>
                     <li className='nav-item'>
@@ -96,7 +94,7 @@ function Layout({ children, window, series, competitions, players }) {
                                 s.type == 'liga' &&
                                 <li key={s.pk}>
                                     <Link href={`/competitions/${competitions.filter(c => c.seriesid == s.pk)[0].pk}`}>
-                                        <a>{s.name}</a>
+                                        {s.name}
                                     </Link>
 
                                 </li>
@@ -110,7 +108,7 @@ function Layout({ children, window, series, competitions, players }) {
                                 s.type == 'cup' &&
                                 <li key={s.pk}>
                                     <Link href={`/competitions/${competitions.filter(c => c.seriesid == s.pk)[0].pk}`}>
-                                        <a>{s.name}</a>
+                                        {s.name}
                                     </Link>
                                 </li>
                             ))}
@@ -123,7 +121,7 @@ function Layout({ children, window, series, competitions, players }) {
                                 s.type == 'ranking' &&
                                 <li key={s.pk}>
                                     <Link href={`/competitions/${competitions.filter(c => c.seriesid == s.pk)[0].pk}`}>
-                                        <a>{s.name}</a>
+                                        {s.name}
                                     </Link>
                                 </li>
                             ))}
@@ -133,22 +131,22 @@ function Layout({ children, window, series, competitions, players }) {
 
                     {/* <li className='nav-item'>
                         <Link href='/archive'>
-                            <a><p className='nav-header'>ARCHIWUM</p> </a>
+                            <p className='nav-header'>ARCHIWUM</p> 
                         </Link>
                     </li> */}
                     <li className='nav-item'>
                         <Link href='/players'>
-                            <a><p className='nav-header'>ZAWODNICY</p></a>
+                            <p className='nav-header'>ZAWODNICY</p>
                         </Link>
                     </li>
                     <li className='nav-item'>
                         <Link href='/faq'>
-                            <a><p className='nav-header'>ROOM/FAQ</p></a>
+                            <p className='nav-header'>ROOM/FAQ</p>
                         </Link>
                     </li>
                     {/* <li className='nav-item'>
                         <Link href='/matches'>
-                            <a><p className='nav-header'>MECZE</p></a>
+                            <p className='nav-header'>MECZE</p>
                         </Link>
                     </li> */}
                     <li className='nav-item'>
