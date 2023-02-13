@@ -6,12 +6,18 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
   reactStrictMode: true,
-  serverRuntimeConfig: {
-    recordingsFolder: '/home/akmere/recordings'
-  },
-  publicRuntimeConfig: {
-  },
-  withBundleAnalyzer : withBundleAnalyzer
+  swcMinify: true,
+  experimental: {
+    appDir: true,
+  }
+  // reactStrictMode: true,
+  // serverRuntimeConfig: {
+  //   recordingsFolder: '/home/akmere/recordings'
+  // },
+  // publicRuntimeConfig: {
+  // }
+  // ,
+  // withBundleAnalyzer : withBundleAnalyzer
 }
 
 

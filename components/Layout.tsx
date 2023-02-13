@@ -1,23 +1,16 @@
 // @ts-nocheck
+'use client';
 import React from 'react'
-import Tabela from './Tabela'
-import { AppBar, TextField, Autocomplete, Box, Container, CssBaseline, Divider, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, createTheme, ThemeProvider, createFilterOptions } from '@mui/material'
-import prisma from '../lib/prisma'
-import Navbar from './Navbar'
-import Footer from './Footer'
-import { Drawer } from '@mui/material'
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import { flexbox } from '@mui/system'
-import { ClassNames, ThemeContext } from '@emotion/react'
+import {TextField, Autocomplete, createTheme, ThemeProvider, createFilterOptions } from '@mui/material'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image';
 import logoPic from '../public/croppedRectangle.png'
 
 
-function Layout({ children, window, series, competitions, players }) {
+function Layout({ children, series, competitions, players }) {
+
+    console.log("i'm here");
     const router = useRouter();
 
     const OPTIONS_LIMIT = 5;
@@ -36,15 +29,15 @@ function Layout({ children, window, series, competitions, players }) {
     players = JSON.parse(players);
     series = JSON.parse(series);
     competitions = JSON.parse(competitions);
-    const styles = theme => ({
-        // Load app bar information from the theme
-        toolbar: theme.mixins.toolbar,
-        content: {
-            padding: '300px'
-        }
-    });
+    // const styles = theme => ({
+    //     // Load app bar information from the theme
+    //     toolbar: theme.mixins.toolbar,
+    //     content: {
+    //         padding: '300px'
+    //     }
+    // });
     const drawerWidth = 300;
-    const container = window !== undefined ? () => window().document.body : undefined;
+    // const container = window !== undefined ? () => window().document.body : undefined;
 
     var seriesContainerOnClick = (e) => {
         if(e.target.parentElement.querySelector('.nav-item ul').classList.contains('open')) e.target.parentElement.querySelector('.nav-item ul').classList.remove('open');
