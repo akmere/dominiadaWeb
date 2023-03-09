@@ -1,11 +1,11 @@
-"use client"
 import React from 'react'
 // import { GetStaticProps, NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import prisma from '../../../lib/prisma'
-import Layout from '../../../components/Layout'
-import Tabela from '../../../components/Tabela'
+import prisma from '../../lib/prisma'
+import Layout from '../../components/Layout'
+import Tabela from '../../components/Tabela'
+import Tabela2 from '../../components/Tabela2'
 import Link from 'next/link'
 import { EditNotifications } from '@mui/icons-material'
 import { useRouter } from 'next/navigation'
@@ -116,19 +116,19 @@ function Competition({ raw, cData, editions, gkData, scorersData, matches, appea
                 <p>{intervalString}</p>
                 </div>
                 {/* {cData[0].type == "liga" ? <div className='competition-rules'><p>{`Points = %W * (${cData[0].goal} * Goals + ${cData[0].assist} * Assists + ${cData[0].cleansheet} * CS + ${cData[0].win} * W + ${cData[0].draw} * D + ${cData[0].loss} * L)`}</p></div> : ``} */}
-                <Tabela rows={rows} columns={generalColumns} pageSize={10} rowHeight={52}/>
+                <Tabela2 rows={rows} columns={generalColumns} pageSize={10} rowHeight={52}/>
             </div>
             <div className='card'>
                 <h3>Najlepsi strzelcy</h3>
-                <Tabela rows={scorersRows} rowHeight={52} subtitle = "" columns={scorersColumns} height="100%" pageSize={3} />
+                <Tabela2 rows={scorersRows} rowHeight={52} subtitle = "" columns={scorersColumns} height="100%" pageSize={3} />
             </div>
             <div className='card'>
                 <h3>Najlepsi bramkarze</h3>
-                <Tabela rows={gkRows} rowHeight={52} subtitle = "" columns={gkColumns} height="100%" pageSize={3} />
+                <Tabela2 rows={gkRows} rowHeight={52} subtitle = "" columns={gkColumns} height="100%" pageSize={3} />
             </div>
             <div className='card' >
                 <h3>Mecze</h3>
-                <Tabela rows={matchesRows} rowHeight={cData[0].format * 30} subtitle = "" columns={matchesColumns} height={120 + cData[0].format * 30 * 3} pageSize={3} />
+                <Tabela2 rows={matchesRows} rowHeight={cData[0].format * 30} subtitle = "" columns={matchesColumns} height={120 + cData[0].format * 30 * 3} pageSize={3} />
             </div>
         </main>
 

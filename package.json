@@ -12,8 +12,11 @@
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.6.2",
     "@mui/material": "^5.6.4",
+    "@mui/system": "^5.4.1",
     "@mui/x-data-grid": "^6.0.0-alpha.9",
     "@next/bundle-analyzer": "^12.3.4",
     "@prisma/client": "^3.13.0",
@@ -25,7 +28,8 @@
     "react": "^18.2.0",
     "react-cookie-consent": "^7.4.1",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "utils": "link:next/dist/next-server/lib/utils"
   },
   "devDependencies": {
     "@types/node": "17.0.31",

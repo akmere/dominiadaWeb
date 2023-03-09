@@ -1,6 +1,7 @@
 import React from 'react'
 import prisma from '../../lib/prisma'
 import Tabela from '../../components/Tabela'
+import Tabela2 from '../../components/Tabela2'
 import Link from 'next/link';
 import getLink from '../../lib/utilities'
 
@@ -23,7 +24,7 @@ export default function Players({players}) {
   return (
     <div className='card'>
         <h3>Zawodnicy</h3>
-        <Tabela rows={rows} columns={columns}/>
+        <Tabela2 rows={rows} columns={columns} pageSize={10}/>
     </div>
   )
 }

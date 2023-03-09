@@ -169,7 +169,7 @@ function Layout({ children, series, competitions, players }) {
             <div className='sidebar'></div>
             <div className='content'>{children}</div>
             <div className='footer'>
-                <p className='copyright'>© 2022 made by akmere</p>
+                <p className='copyright'>© 2022 made by <Link href={"https://akmere.com"}>akmere</Link></p>
             </div>
         </div>
         </div>

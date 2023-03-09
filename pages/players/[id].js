@@ -2,6 +2,7 @@ import Link from 'next/link';
 import React from 'react'
 import Layout from '../../components/Layout'
 import Tabela from '../../components/Tabela';
+import Tabela2 from '../../components/Tabela2';
 import prisma from '../../lib/prisma'
 
 
@@ -65,15 +66,15 @@ function Player({ player, matches, results, goals, assists, appearances }) {
     <div className='player-container'>
       <div className='card player-results'>
         <h3>Statystyki</h3>
-      <Tabela rows={resultsRows.filter(rr => rr.type == 'liga' || rr.type == 'cup')} columns={resultsColumns} pageSize={10} rowHeight={52} getRowClassName={(params) => params.row.ended && params.row.type=='liga' ? `position-${params.row.position}-row` : null} />
+      <Tabela2 rows={resultsRows.filter(rr => rr.type == 'liga' || rr.type == 'cup')} columns={resultsColumns} pageSize={10} rowHeight={52} getRowClassName={(params) => params.row.ended && params.row.type=='liga' ? `position-${params.row.position}-row` : null} />
       </div>
       <div className='card player-ranking' style={{ justifyContent: 'center' }}>
         <h3>Ranking</h3>
-        <Tabela rows={resultsRows.filter(rr => rr.type == 'ranking')} columns={rankingColumns} pageSize={10} rowHeight={52} getRowClassName={(params) => params.row.ended && params.row.type=='liga' || params.row.type=='ranking' ? `position-${params.row.rankingposition}-row` : null} />
+        <Tabela2 rows={resultsRows.filter(rr => rr.type == 'ranking')} columns={rankingColumns} pageSize={10} rowHeight={52} getRowClassName={(params) => params.row.ended && params.row.type=='liga' || params.row.type=='ranking' ? `position-${params.row.rankingposition}-row` : null} />
       </div>
       <div className='card player-matches' >
         <h3>Mecze</h3>
-          <Tabela rows={rows} columns={columns} pageSize={5} rowHeight={52 * 2} getRowClassName={(params) => `${params.row.result}-row`} />
+          <Tabela2 rows={rows} columns={columns} pageSize={5} rowHeight={52 * 2} getRowClassName={(params) => `${params.row.result}-row`} />
       </div>
     </div>
     </div>
