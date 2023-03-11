@@ -144,7 +144,7 @@ function Layout({ children, series, competitions, players }) {
                     </li> */}
                     <li className='nav-item'>
                         <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: "space-evenly" }}>
-                            <a href='https://discord.gg/qUrgBbssvE'>
+                            <a href='https://discord.gg/g7MPuk4t'>
                                 <i className="bi bi-discord" style={{ color: 'white', fontSize: 50}}></i>
                             </a>
                             <a href='https://www.facebook.com/groups/479747842604803'>

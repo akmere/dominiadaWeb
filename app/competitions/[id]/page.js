@@ -127,7 +127,7 @@ export default async function Competition({params, searchParams}) {
             </div>
             <div className='card' >
                 <h3>Mecze</h3>
-                <Tabela2 rows={matchesRows} rowHeight={cData[0].format * 30} subtitle = "" columns={matchesColumns} height={120 + cData[0].format * 30 * 3} pageSize={3} />
+                <Tabela2 rows={matchesRows} rowHeight={cData[0].format * 30} subtitle = "" columns={matchesColumns} height={120 + Math.max(2, cData[0].format) * 30 * 3} pageSize={3} />
             </div>
         </main>
 
