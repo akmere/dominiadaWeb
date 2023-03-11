@@ -6,6 +6,7 @@ import prisma from '../lib/prisma'
 import Tabela from '../components/Tabela'
 import Tabela2 from '../components/Tabela2'
 import Link from 'next/link'
+import {getTeamAppearances, getTeamElement, getFullTeamElement, getMatchLinkElement, getDateElement} from '../lib/utilities'
 // import { useServer } from 'next/server/core/utils'
 
 // export async function getStaticProps() { 
@@ -27,14 +28,6 @@ function getMatchElement(rowData) {
   return (<Link href={`/matches/${encodeURIComponent(rowData.pk)}`}>Details</Link>);
 }
 
-function getRedsElement(rowData, appearances) { 
-  return (<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>{appearances.filter(appearance => appearance.matchid == rowData.pk && appearance.team == 1).map(appearance => (<p key={appearance.pk} className='player-match-competition'> {appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)
-}
-
-function getBluesElement(rowData, appearances) { 
-  return (<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>{appearances.filter(appearance => appearance.matchid == rowData.pk && appearance.team == 2).map(appearance => (<p key={appearance.pk} className='player-match-competition'> {appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)
-}
-
 export default async function Home() {
   let matches = prisma.$queryRaw`SELECT Pk, result1, result2, date, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY HH24:MI:SS') AS ddate FROM Matches ORDER BY Date DESC LIMIT 100;`;
   let statistics = prisma.$queryRaw`SELECT COUNT(*) AS matchesCount, SUM(result1 + result2) as goalsCount FROM Matches`;
@@ -49,7 +42,7 @@ export default async function Home() {
 
   // matches = matches ? JSON.parse(matches) : [];
   // appearances = appearances ? JSON.parse(appearances) : [];
-  let matchesRows = matches.map((row, index) => ({ id: index, position: index + 1, recording: getRecordingElement(row), match: getMatchElement(row), reds: getRedsElement(row, appearances), blues: getBluesElement(row, appearances), ...row }));
+  let matchesRows = matches.map((row, index) => ({ id: index, position: index + 1, recording: getMatchLinkElement(row.pk), match: getMatchElement(row), reds: getFullTeamElement(appearances, row.pk, 1), blues: getFullTeamElement(appearances, row.pk, 2), ...row, ddate: getDateElement(row.ddate) }));
   let matchesColumns = [];
   // let matchesColumns = [{ field: 'reds', headerName: "", flex: 1, renderCell: (params, event) => (<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 1).map(appearance => (<p key={appearance.pk} className='player-match-competition'> {appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>)}, { field: 'result1', headerName: "Red", flex: 0.2, align: 'center', headerAlign: 'center' }, { field: 'result2', headerName: "Blue", flex: 0.2, align: 'center', headerAlign: 'center' }, { field: 'blues', headerName: "", flex: 1, renderCell: (params) => (<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>{appearances.filter(appearance => appearance.matchid == params.row.pk && appearance.team == 2).map(appearance => (<p key={appearance.pk} className='player-match-competition'>{appearance.playerid ? (<Link href={`/players/${appearance.playerid}`}>{appearance.playername}</Link>) : appearance.playername}</p>))}</div>) }, { field: 'ddate', headerName: "Date", flex: 1 }]
   // matchesColumns.push({ field: 'pk', headerName: "", flex: 0.3, renderCell: (params, event) => (<Link href={`/matches/${encodeURIComponent(params.row.pk)}`}>Details</Link>) });
@@ -91,7 +84,7 @@ export default async function Home() {
       <div className='card' >
         <h3>Ostatnie mecze</h3>
         {/* <Tabela rows={matchesRows} rowHeight={4   * 30} subtitle="" columns={matchesColumns} height={120 + 4 * 30 * 3} pageSize={3} /> */}
-        {<Tabela2 rows={matchesRows} columns={matchesColumns} pageSize={3} rowHeight={4*30}px/>}
+        {<Tabela2 rows={matchesRows} columns={matchesColumns} pageSize={3} minWidth={'400px'} rowHeight={4*30}px/>}
       </div>
     </main>
 

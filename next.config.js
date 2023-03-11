@@ -9,6 +9,9 @@ const nextConfig = {
   swcMinify: true,
   experimental: {
     appDir: true,
+  },
+  serverRuntimeConfig: {
+    recordingsFolder: "/home/akmere/Projects/dominiadaWeb/recordings"
   }
   // reactStrictMode: true,
   // serverRuntimeConfig: {

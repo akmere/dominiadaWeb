@@ -1,31 +1,20 @@
 import React from 'react'
-import prisma from '../../lib/prisma'
-import Layout from '../../components/Layout'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
-import getLink from '../../lib/utilities'
+import prisma from '../../../lib/prisma'
+import {getLink} from '../../../lib/utilities'
 
-export async function getServerSideProps({ params }) {
+
+export default async function Match({ params, searchParams }) {
   const matchId = parseInt(params.id);
   let match = await prisma.$queryRaw`SELECT *, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk=${matchId}`;
   let goals = await prisma.$queryRaw`SELECT * FROM Goals WHERE MatchId=${matchId}`;
   let appearances = await prisma.$queryRaw`SELECT * FROM Appearances WHERE MatchId=${matchId}`;
   let recordingAvailable = await (await fetch(`http://localhost:3000/api/recordings/${matchId}`)).json();
   [match, goals, appearances, recordingAvailable] = await Promise.all([match, goals, appearances, recordingAvailable]);
-  return {
-    props: { match: JSON.stringify(match), goals: JSON.stringify(goals), appearances: JSON.stringify(appearances), recordingAvailable : recordingAvailable},
-  }
-}
 
-export default function Match({ match, goals, appearances, recordingAvailable }) {
-  match = JSON.parse(match);
-  goals = JSON.parse(goals);
-  appearances = JSON.parse(appearances);
-  const router = useRouter();
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div>
-        <iframe src={`/falafel/costam.html?id=${router.query.id}`} width={'1500px'} height={'850px'}></iframe>
+        <iframe src={`/falafel/costam.html?id=${matchId}`} width={'1500px'} height={'850px'}></iframe>
       </div>
       <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '600px' }}>
         <a className= {recordingAvailable ? `` : `disabled-link`} href={`/api/getRecording/${match[0].pk}`}><i style={{color: recordingAvailable ? 'lightgreen' : '#FF7F7F'}} className="bi bi-file-earmark-arrow-down"></i></a>
@@ -55,7 +44,7 @@ export default function Match({ match, goals, appearances, recordingAvailable })
           <ul className='goal-list'>
             {goals.sort((a,b) => {if(a.time > b.time) return 1; else return -1;}).map(goal => {
               return (<li key={goal.pk} style={{display: 'flex'}}>
-                <p style={{fontWeight: 'bold'}}>{Math.floor(goal.time / 60)}:{Math.floor(goal.time % 60)}&nbsp;</p> <p style={{textAlign: 'center'}}> {getLink(goal.scorername, goal.scorer)} {goal.assistername ? <>({getLink(goal.assistername, goal.assister)})</> : ``} {goal.own ? `(OG)` : ``}</p>
+                <p style={{fontWeight: 'bold'}}>{Math.floor(goal.time / 60)}:{Math.floor(goal.time % 60).toString().padStart(2,'0')}&nbsp;</p> <p style={{textAlign: 'center'}}> {getLink(goal.scorername, goal.scorer)} {goal.assistername ? <>({getLink(goal.assistername, goal.assister)})</> : ``} {goal.own ? `(OG)` : ``}</p>
               </li>)
             })}
           </ul>

@@ -77,7 +77,7 @@ function Layout({ children, series, competitions, players }) {
                     </li>
                     <li>  
                         <Link href="/" className='logo'>
-                            <Image src={logoPic} atl="logo" layout='responsive' objectFit='contain'/>        
+                            <Image src={logoPic} alt="logo" layout='responsive' objectFit='contain'/>        
                         </Link>
                     </li>
                     <li className='nav-item'>

@@ -1,19 +1,13 @@
 import React from 'react'
 import fs from 'fs';
 
-export async function getStaticProps(context) {
+export default function faq({params, searchParams}) {
   const commandsPath = `public/commands.json`;
   var commandsData = fs.readFileSync(commandsPath, 'utf8');
-  var commandsJson = JSON.parse(commandsData);
+  let commands = JSON.parse(commandsData);
   const questionsPath = `public/questions.json`;
   var questionsData = fs.readFileSync(questionsPath, 'utf8');
-  var questionsJson = JSON.parse(questionsData);
-  return {
-    props: {commands: commandsJson, questions: questionsJson}, // will be passed to the page component as props
-  }
-}
-
-export default function faq({commands, questions}) {
+  let questions = JSON.parse(questionsData);
   const roles = [... new Set(commands.map(command => command.role))];
   return (
     <div className='faq-container'>

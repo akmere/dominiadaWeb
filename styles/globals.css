@@ -70,7 +70,7 @@ a {
   "header header"
   "content sidebar"
   "footer footer";
-  grid-template-columns: 6fr 1fr;
+  grid-template-columns: 6fr 0.2fr;
   grid-template-rows: 70px 1fr 50px;
   height: auto;
   min-height: 100vh;
@@ -105,6 +105,7 @@ a {
   width: var(--drawer-width);
   height: 100vh;
   box-shadow: 0 0 25px 5px #000;
+  transition: left 600ms ease;
 }
 
 .player-container {
@@ -440,7 +441,7 @@ white-space: nowrap;
   pointer-events: none;
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1500px) {
   .grid-container {
     height: 100vh;
     min-height: -webkit-fill-available;
@@ -456,7 +457,7 @@ white-space: nowrap;
   }
 
   .competition-main > * {
-    height: 347px;
+    /* height: 347px; */
   }
   .player-container {
     display: flex;
