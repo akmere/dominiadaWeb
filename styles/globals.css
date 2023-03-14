@@ -473,3 +473,8 @@ white-space: nowrap;
     grid-template-columns: 1fr;
   }
 }
+
+.players-autocomplete{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

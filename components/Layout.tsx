@@ -1,30 +1,17 @@
 // @ts-nocheck
 'use client';
 import React from 'react'
-import {TextField, Autocomplete, createTheme, ThemeProvider, createFilterOptions } from '@mui/material'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image';
 import logoPic from '../public/croppedRectangle.png'
+import Autocomplete from './Autocomplete';
 
 
 function Layout({ children, series, competitions, players }) {
 
     console.log("i'm here");
     const router = useRouter();
-
-    const OPTIONS_LIMIT = 5;
-    const defaultFilterOptions = createFilterOptions();
-    
-    const filterOptions = (options, state) => {
-      return defaultFilterOptions(options, state).slice(0, OPTIONS_LIMIT);
-    };
-
-    const darkTheme = createTheme({
-        palette: {
-          mode: 'dark',
-        },
-      });
 
     players = JSON.parse(players);
     series = JSON.parse(series);
@@ -160,11 +147,12 @@ function Layout({ children, series, competitions, players }) {
             <i className="bi bi-list navbar-toggler" onClick={navbarTogglerOnClick}></i>  
         <div className='grid-container'>
                 <div className='header'>
-                    <ThemeProvider theme={darkTheme}>
+                    {/* <ThemeProvider theme={darkTheme}>
                         <Autocomplete key={true} filterOptions={filterOptions} limitTags={5} size='small' disablePortal className="autocomplete-players" options={players.map(p => p.nick)} sx={{ width: 300, marginTop: '1rem' }}
                             renderInput={(params) => <TextField {...params} label="Find player" />} 
                             onChange={(e, value) => {console.log(value); let found = players.filter(p => p.nick == value)[0]; if(found) router.push(`/players/${found.pk}`) }}/>
-                    </ThemeProvider>
+                    </ThemeProvider> */}
+                    <Autocomplete className="players-autocomplete" options={players.map(p => p.nick).sort()} onChange={(value) => {let found = players.filter(p => p.nick == value)[0]; if(found) router.push(`/players/${found.pk}`) }}/>
                 </div>          
             <div className='sidebar'></div>
             <div className='content'>{children}</div>
