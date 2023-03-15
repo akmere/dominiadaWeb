@@ -1,12 +1,11 @@
   .ir-autocomplete > input{
-    /* text-align: center; */
     padding-left: 15px;
     padding-right: 15px;
-    /* background-color: var(--table-colour); */
     background-color: inherit;
     font-size: 1.1rem;
     color: white;
-    /* box-shadow: 0 0 1px 1px #000; */
+    border: 1px solid rgba(255, 255, 255, 0.23);
+    border-radius: 5px;
   }
   
   .ir-autocomplete > *::placeholder {
@@ -14,9 +13,8 @@
   }
   
   .ir-autocomplete > input:focus{
-    /* text-align: center; */
     outline: 1px solid white;
-    /* box-shadow: 0 0 1px 1px #000; */
+    margin-bottom: 1px;
   }
   
   .ir-autocomplete > div {
@@ -28,6 +26,12 @@
   .ir-autocomplete > div > div:hover {
     background-color: lightgray;
     cursor: pointer;
+  }
+
+  .ir-autocomplete > div > div:focus {
+    outline: none;
+    cursor: pointer;
+    border: 1px solid white;
   }
 
   .selected {

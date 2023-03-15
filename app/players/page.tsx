@@ -17,7 +17,7 @@ export default async function Players(props) {
   return (
     <div className='card'>
         <h3>Zawodnicy</h3>
-        <Tabela2 rows={rows} columns={columns} pageSize={10}/>
+        <Tabela2 rows={rows} columns={columns} pageSize={10} minWidth={'550px'}/>
     </div>
   )
 }

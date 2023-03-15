@@ -30,7 +30,7 @@
     "**/*.tsx",
     "lib/prisma.js",
     ".next/types/**/*.ts"
-  ],
+, "app/players/[id]/api/route.js", "app/players/[id]/route.js"  ],
   "exclude": [
     "node_modules"
   ]

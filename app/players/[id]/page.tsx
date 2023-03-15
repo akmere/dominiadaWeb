@@ -37,7 +37,6 @@ export default async function Player({ params, searchParams }) {
         if (ranking) {
             r.rankingposition = ranking.position;
             r.ranking = ranking.ranking;
-            console.log(`r: ${JSON.stringify(r)}`);
         }
     })
     appearances = await appearances;
@@ -65,7 +64,7 @@ export default async function Player({ params, searchParams }) {
 
     let columns = [{ field: 'reds', headerName: "", flex: 1}, { field: 'result1', headerName: "Red", flex: 0.3 }, { field: 'result2', headerName: "Blue", flex: 0.3 }, { field: 'blues', headerName: "", flex: 1}, {
         field: 'details', headerName: "", flex: 0.5}, { field: 'ddate', headerName: "Date", flex: 1 }];
-    columns.push({ field: 'pk', headerName: "", flex: 0.3});
+    columns.push({ field: 'pk', headerName: "", flex: 0.5});
     // columns.push({ field: 'pk2', headerName: "Download", flex: 0.3, renderCell: (params) => (<Link href={`/recordings/${params.row.pk}.hbr2`}><i className="bi bi-file-earmark-arrow-down"></i></Link>) });
     let resultsColumns = [{ field: 'name', headerName: "Name", flex: 1}, { field: 'appearances', headerName: "Apps (GK)", flex: 0.4}, { field: 'goals', headerName: "Goals", flex: 0.3 }, { field: 'assists', headerName: "Assists", flex: 0.3 }, { field: 'cleansheets', headerName: "CS", flex: 0.3, hide: true }, { field: 'winrate', headerName: "%W", flex: 0.3 }, { field: 'cspercent', headerName: "%CS", flex: 0.3 }, { field: 'position', headerName: "Position", flex: 0.3 }];
     let rankingColumns = [{ field: 'name', headerName: "Name", flex: 1}, { field: 'appearances', headerName: "Apps (GK)", flex: 0.4}, { field: 'goals', headerName: "Goals", flex: 0.3 }, { field: 'assists', headerName: "Assists", flex: 0.3 }, { field: 'cleansheets', headerName: "CS", flex: 0.3, hide: true }, { field: 'winrate', headerName: "%W", flex: 0.3 }, { field: 'cspercent', headerName: "%CS", flex: 0.3 }, { field: 'ranking', headerName: "ELO", flex: 0.3 }, { field: 'position', headerName: "Position", flex: 0.3 }];
@@ -76,7 +75,7 @@ export default async function Player({ params, searchParams }) {
             <div className='player-container'>
                 <div className='card player-results'>
                     <h3>Statystyki</h3>
-                    <Tabela2 rows={resultsRows.filter(rr => rr.type == 'liga' || rr.type == 'cup')} columns={resultsColumns} pageSize={10} rowHeight={52} />
+                    <Tabela2 rows={resultsRows.filter(rr => rr.type == 'liga' || rr.type == 'cup')} columns={resultsColumns} pageSize={10} rowHeight={52} minWidth={'600px'} />
                 </div>
                 <div className='card player-ranking' style={{ justifyContent: 'center' }}>
                     <h3>Ranking</h3>
