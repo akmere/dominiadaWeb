@@ -6,6 +6,8 @@ import Tabela2 from '../../components/Tabela2'
 import Link from 'next/link';
 import {getLink} from '../../lib/utilities'
 
+export const revalidate = 60;
+
 export default async function Players(props) {
     const players = await prisma.$queryRaw`SELECT Pk AS Id, Nick, Role, TO_CHAR(TO_TIMESTAMP(RegisteredOn::VARCHAR(25), 'YYYYMMDDHH24MISS'), 'DD/MM/YYYY, HH24:MI:SS') AS RegisteredOn FROM Players ORDER BY Pk ASC`;
     let rows = players.map((row, index) => ({ id: index, position: index + 1, ...row, nick: getLink(row.nick, row.id) }));

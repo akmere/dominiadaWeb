@@ -7,6 +7,9 @@ import Tabela from '../components/Tabela'
 import Tabela2 from '../components/Tabela2'
 import Link from 'next/link'
 import {getTeamAppearances, getTeamElement, getFullTeamElement, getMatchLinkElement, getDateElement} from '../lib/utilities'
+
+export const revalidate = 60;
+
 // import { useServer } from 'next/server/core/utils'
 
 // export async function getStaticProps() { 

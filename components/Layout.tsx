@@ -152,7 +152,7 @@ function Layout({ children, series, competitions, players }) {
                             renderInput={(params) => <TextField {...params} label="Find player" />} 
                             onChange={(e, value) => {console.log(value); let found = players.filter(p => p.nick == value)[0]; if(found) router.push(`/players/${found.pk}`) }}/>
                     </ThemeProvider> */}
-                    <Autocomplete className="players-autocomplete" options={players.map(p => p.nick).sort()} onChange={(value) => {let found = players.filter(p => p.nick == value)[0]; if(found) router.push(`/players/${found.pk}`, undefined, {shallow: true}); }}/>
+                    <Autocomplete className="players-autocomplete" options={players.map(p => p.nick).sort()} onChange={(value) => {let found = players.find(p => p.nick == value); if(found) router.push(`/players/${found.pk}`); }}/>
                 </div>          
             <div className='sidebar'></div>
             <div className='content'>{children}</div>

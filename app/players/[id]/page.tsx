@@ -8,6 +8,8 @@ import Tabela2 from '../../../components/Tabela2';
 import prisma from '../../../lib/prisma'
 import { getPlayerMatchDetailsElement, getFullTeamElement, getMatchLinkElement, getDateElement} from '../../../lib/utilities';
 
+export const revalidate = 60;
+
 function getMatchResult(appearance, match) {
     let result = match.result1 > match.result2 ? 1 : match.result1 < match.result ? 2 : 0;
     if (result === 0) return 0;

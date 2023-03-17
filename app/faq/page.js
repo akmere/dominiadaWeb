@@ -1,6 +1,8 @@
 import React from 'react'
 import fs from 'fs';
 
+export const revalidate = 600;
+
 export default function faq({params, searchParams}) {
   const commandsPath = `public/commands.json`;
   var commandsData = fs.readFileSync(commandsPath, 'utf8');
