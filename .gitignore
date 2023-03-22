@@ -36,15 +36,15 @@ yarn-error.log*
 
 
 
-.env
-ladominiada.sql
-public/recordings/
-todo.txtrecordings/
-recordings
-pnpm.lock.yaml
-vscode
-.vscode
-pnpm-lock.yaml
-nohup.out
-temp.json
-private/*
+/.env
+/ladominiada.sql
+/public/recordings/
+/todo.txt
+/recordings
+/pnpm.lock.yaml
+/vscode
+/.vscode
+/pnpm-lock.yaml
+/nohup.out
+/temp.json
+/private/*
