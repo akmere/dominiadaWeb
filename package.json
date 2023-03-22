@@ -21,14 +21,17 @@
     "@next/bundle-analyzer": "^12.3.4",
     "@prisma/client": "^3.13.0",
     "bootstrap-icons": "^1.8.1",
+    "child-process-promise": "^2.2.1",
     "cross-env": "^7.0.3",
     "flag-icon-css": "^4.1.7",
     "flag-icons": "^6.3.0",
     "next": "13.2.5-canary.1",
+    "next-auth": "^4.20.1",
     "react": "^18.2.0",
     "react-cookie-consent": "^7.4.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
+    "swr": "^2.1.0",
     "utils": "link:next/dist/next-server/lib/utils"
   },
   "devDependencies": {

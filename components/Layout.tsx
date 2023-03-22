@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image';
 import logoPic from '../public/croppedRectangle.png'
 import Autocomplete from './Autocomplete';
+import { SessionProvider } from "next-auth/react"
 
 
-function Layout({ children, series, competitions, players }) {
+function Layout({ children, series, competitions, players, session}) {
 
     console.log("i'm here");
     const router = useRouter();
@@ -49,6 +50,7 @@ function Layout({ children, series, competitions, players }) {
     }
 
     return (
+        <SessionProvider session={session}>
         <div>
         <div className='navbar'>
                 <ul className='navbar-nav'>
@@ -161,6 +163,7 @@ function Layout({ children, series, competitions, players }) {
             </div>
         </div>
         </div>
+        </SessionProvider>
     )
 }
 

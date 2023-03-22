@@ -10,9 +10,10 @@ import CookieConsent, { Cookies } from "react-cookie-consent";
 
 
 export default async function RootLayout({
-  children,
+  children, session
 }: {
   children: React.ReactNode;
+  session : any;
 }) {
   const series = JSON.stringify(await prisma.$queryRaw`SELECT Pk, Name, Type FROM Series;`);
   const competitions = JSON.stringify(await prisma.$queryRaw`SELECT Pk, Name, SeriesId, Edition FROM Competitions ORDER BY Pk DESC;`);
@@ -35,7 +36,7 @@ export default async function RootLayout({
   This website uses cookies to enhance the user experience.
 </CookieConsent> */}
       <body>
-        <Layout series={series} competitions={competitions} players={players}>
+        <Layout series={series} competitions={competitions} players={players} session={session}>
           {children}
         </Layout>
       </body>
