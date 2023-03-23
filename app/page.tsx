@@ -4,7 +4,6 @@
 // import React from 'react'
 import prisma from '../lib/prisma'
 import Tabela from '../components/Tabela'
-import Tabela2 from '../components/Tabela2'
 import Link from 'next/link'
 import {getTeamAppearances, getTeamElement, getFullTeamElement, getMatchLinkElement, getDateElement} from '../lib/utilities'
 
@@ -87,7 +86,7 @@ export default async function Home() {
       <div className='card' >
         <h3>Ostatnie mecze</h3>
         {/* <Tabela rows={matchesRows} rowHeight={4   * 30} subtitle="" columns={matchesColumns} height={120 + 4 * 30 * 3} pageSize={3} /> */}
-        {<Tabela2 rows={matchesRows} columns={matchesColumns} pageSize={3} minWidth={'400px'} rowHeight={4*30}px/>}
+        {<Tabela rows={matchesRows} columns={matchesColumns} pageSize={3} minWidth={'400px'} rowHeight={4*30}px/>}
       </div>
     </main>
 

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import React from 'react'
 import Layout from '../../../components/Layout'
 import Tabela from '../../../components/Tabela';
-import Tabela2 from '../../../components/Tabela2';
 import prisma from '../../../lib/prisma'
 import { getPlayerMatchDetailsElement, getFullTeamElement, getMatchLinkElement, getDateElement} from '../../../lib/utilities';
 
@@ -77,15 +76,15 @@ export default async function Player({ params, searchParams }) {
             <div className='player-container'>
                 <div className='card player-results'>
                     <h3>Statystyki</h3>
-                    <Tabela2 rows={resultsRows.filter(rr => rr.type == 'liga' || rr.type == 'cup')} columns={resultsColumns} pageSize={10} rowHeight={52} minWidth={'600px'} />
+                    <Tabela rows={resultsRows.filter(rr => rr.type == 'liga' || rr.type == 'cup')} columns={resultsColumns} pageSize={10} rowHeight={52} minWidth={'600px'} />
                 </div>
                 <div className='card player-ranking' style={{ justifyContent: 'center' }}>
                     <h3>Ranking</h3>
-                    <Tabela2 rows={resultsRows.filter(rr => rr.type == 'ranking')} columns={rankingColumns} pageSize={10} rowHeight={52}/>
+                    <Tabela rows={resultsRows.filter(rr => rr.type == 'ranking')} columns={rankingColumns} pageSize={10} rowHeight={52}/>
                 </div>
                 <div className='card player-matches' >
                     <h3>Mecze</h3>
-                    <Tabela2 rows={rows} columns={columns} pageSize={5} rowHeight={52 * 2}/>
+                    <Tabela rows={rows} columns={columns} pageSize={5} rowHeight={52 * 2}/>
                 </div>
             </div>
         </div>

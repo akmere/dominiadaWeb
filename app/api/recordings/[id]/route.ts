@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { NextResponse } from 'next/server';
 import { createReadStream, statSync } from 'fs'
-import { pipeline } from 'stream'
 
 export async function GET(request: Request, { params }) {
     const id = params.id;
@@ -22,3 +21,4 @@ export async function GET(request: Request, { params }) {
         return new Response("", { status: 404, headers: {} });
     }
 }
+

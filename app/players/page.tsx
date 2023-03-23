@@ -2,7 +2,6 @@
 import React from 'react'
 import prisma from '../../lib/prisma'
 import Tabela from '../../components/Tabela'
-import Tabela2 from '../../components/Tabela2'
 import Link from 'next/link';
 import {getLink} from '../../lib/utilities'
 
@@ -19,7 +18,7 @@ export default async function Players(props) {
   return (
     <div className='card'>
         <h3>Zawodnicy</h3>
-        <Tabela2 rows={rows} columns={columns} pageSize={10} minWidth={'550px'}/>
+        <Tabela rows={rows} columns={columns} pageSize={10} minWidth={'550px'}/>
     </div>
   )
 }

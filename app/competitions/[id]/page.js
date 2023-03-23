@@ -5,10 +5,10 @@ import Image from 'next/image'
 import prisma from '../../../lib/prisma'
 import Layout from '../../../components/Layout'
 import Tabela from '../../../components/Tabela'
-import Tabela2 from '../../../components/Tabela2'
 import Link from 'next/link'
 import SelectCompetition from '../../../components/SelectCompetition'
 import {getTeamAppearances, getTeamElement, getFullTeamElement, getMatchLinkElement, getLink, getDateElement} from '../../../lib/utilities'
+import { notFound } from 'next/navigation';
 // import { EditNotifications } from '@mui/icons-material'
 // import { useRouter } from 'next/navigation'
 // import { Tooltip } from '@mui/material'
@@ -26,6 +26,7 @@ import {getTeamAppearances, getTeamElement, getFullTeamElement, getMatchLinkElem
 export default async function Competition({params, searchParams}) {
     let competitionId = parseInt(params.id);
     let cData = await prisma.$queryRaw`SELECT Goal, Assist, Win, Draw, Loss, CleanSheet, Competitions.Format AS Format, Series.Name AS Name, Competitions.TagId AS TagId, Series.Pk AS SeriesId, Series.Type AS Type, Competitions.Edition AS Edition FROM Competitions LEFT JOIN Series ON Competitions.SeriesId = Series.Pk WHERE Competitions.Pk = ${competitionId};`;    
+    if(cData.length == 0) return notFound();
     let raw = prisma.$queryRaw`SELECT PlayerId, Nick, Goals, Assists, CleanSheets, LostGoals, ExtraWins AS Wins, ExtraDraws AS Draws, ExtraLosses AS Losses, Appearances, CASE WHEN Appearances > 0 THEN ROUND(CAST(ExtraWins AS decimal)/Appearances, 4) * 100 ELSE NULL END AS WinRate, CASE WHEN Gka>0 THEN (ROUND(CAST(CleanSheets AS decimal)/Gka, 4) * 100) ELSE NULL END AS CSPercent, ROUND(Points) AS Points, ROUND(GkPoints) AS GkPoints, GKa FROM Stats WHERE CompetitionId=${competitionId} ORDER BY Points DESC, Goals DESC, Assists DESC, CleanSheets DESC, Appearances ASC;`;    
     let editions = prisma.$queryRaw`SELECT Pk, Edition FROM Competitions WHERE SeriesId=${cData[0].seriesid} ORDER BY Edition DESC;`;
     let matches = prisma.$queryRaw`SELECT Pk, result1, result2, TO_CHAR(TO_TIMESTAMP(date::VARCHAR(25), 'YYYYMMDDHH24MISS') AT TIME ZONE 'Europe/Warsaw', 'DD/MM/YYYY, HH24:MI:SS') AS ddate FROM Matches WHERE Pk IN (SELECT MatchId FROM Matches_Tags WHERE TagId=${cData[0].tagid}) ORDER BY Date DESC;`;
@@ -115,19 +116,19 @@ export default async function Competition({params, searchParams}) {
                 <p>{intervalString}</p>
                 </div>
                 {/* {cData[0].type == "liga" ? <div className='competition-rules'><p>{`Points = %W * (${cData[0].goal} * Goals + ${cData[0].assist} * Assists + ${cData[0].cleansheet} * CS + ${cData[0].win} * W + ${cData[0].draw} * D + ${cData[0].loss} * L)`}</p></div> : ``} */}
-                <Tabela2 rows={rows} columns={generalColumns} pageSize={10} rowHeight={52} minWidth={'600px'}/>
+                <Tabela rows={rows} columns={generalColumns} pageSize={10} rowHeight={52} minWidth={'600px'}/>
             </div>
             <div className='card'>
                 <h3>Najlepsi strzelcy</h3>
-                <Tabela2 rows={scorersRows} rowHeight={52} subtitle = "" columns={scorersColumns} height="100%" pageSize={3} minWidth={'400px'}/>
+                <Tabela rows={scorersRows} rowHeight={52} subtitle = "" columns={scorersColumns} height="100%" pageSize={3} minWidth={'400px'}/>
             </div>
             <div className='card'>
                 <h3>Najlepsi bramkarze</h3>
-                <Tabela2 rows={gkRows} rowHeight={52} subtitle = "" columns={gkColumns} height="100%" pageSize={3} minWidth={'400px'}/>
+                <Tabela rows={gkRows} rowHeight={52} subtitle = "" columns={gkColumns} height="100%" pageSize={3} minWidth={'400px'}/>
             </div>
             <div className='card' >
                 <h3>Mecze</h3>
-                <Tabela2 rows={matchesRows} rowHeight={Math.max(2, cData[0].format) * 30} subtitle = "" columns={matchesColumns} pageSize={3} />
+                <Tabela rows={matchesRows} rowHeight={Math.max(2, cData[0].format) * 30} subtitle = "" columns={matchesColumns} pageSize={3} />
             </div>
         </main>
 
